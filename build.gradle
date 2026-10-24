@@ -1,0 +1,82 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+def mc = project.property('mc')
+def versionProps = new Properties()
+file("versions/${mc}.properties").withInputStream { versionProps.load(it) }
+
+version = "${project.mod_version}+${mc}"
+group = project.maven_group
+
+base {
+	archivesName = 'schematic-tracker'
+}
+
+repositories {
+	maven { url = 'https://maven.terraformersmc.com/releases/' }
+}
+
+// Versionsabhängiger Code (src/compat/<gruppe>): 26.1.x hat andere Stellen für Bildschirme als 26.2+.
+def compatGroup = mc.startsWith('26.1') ? '26.1' : '26.2'
+
+loom {
+	splitEnvironmentSourceSets()
+	// Eigener Testordner pro Version, damit Welten und Einstellungen nicht durcheinanderkommen.
+	runs {
+		client {
+			runDir = mc == '26.3' ? 'run' : "run-${mc}"
+		}
+	}
+	mods {
+		"schematic-tracker" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+sourceSets {
+	client {
+		java {
+			srcDir "src/compat/${compatGroup}/java"
+		}
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${versionProps.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${versionProps.fabric_api_version}"
+
+	// Optional: Einstellungen über Mod Menu
+	compileOnly "com.terraformersmc:modmenu:${versionProps.modmenu_version}"
+
+	testImplementation platform("org.junit:junit-bom:5.13.4")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+	useJUnitPlatform()
+}
+
+processResources {
+	def props = [version: project.version, minecraft_range: versionProps.minecraft_range]
+	inputs.properties props
+	filesMatching("fabric.mod.json") { expand props }
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+	it.options.encoding = 'UTF-8'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+	from('LICENSE') { rename { "${it}_schematic-tracker" } }
+}
