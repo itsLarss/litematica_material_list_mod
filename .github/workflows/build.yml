@@ -13,10 +13,11 @@ jobs:
         mc: ["1.21", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"]
     steps:
       - uses: actions/checkout@v4
+      # Gradle/Loom laufen auf Java 25; die Mod selbst wird für Java 21 gebaut (release = 21).
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew build -Pmc=${{ matrix.mc }}
       - uses: actions/upload-artifact@v4
