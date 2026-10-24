@@ -70,6 +70,25 @@ The mod only talks to the website you set. The connection token is stored in
 Polling happens every 2.5 s while the HUD or list is visible (every 10 s after two quiet minutes) and stops
 while the game is paused.
 
+## Branches
+
+`main` always holds the newest Minecraft version. Older Minecraft versions get their own branches.
+Never merge branches of different Minecraft lines into each other – each line has its own build setup.
+
+| Branch        | Minecraft | Purpose                                   |
+| ------------- | --------- | ----------------------------------------- |
+| `main`        | 26.x      | Release of the newest Minecraft line      |
+| `dev-26.x`    | 26.x      | Development for 26.x → merge into `main`  |
+| `dev-main`    | 26.x      | Work in progress → merge into `dev-26.x`  |
+| `main-1.21.x` | 1.21.x    | Release of the 1.21 line                  |
+| `dev-1.21.x`  | 1.21.x    | Development for 1.21.x → merge into `main-1.21.x` |
+
+Pull requests always go from the work branch (compare) into the next branch of the **same** line (base):
+`dev-main → dev-26.x → main` and `dev-1.21.x → main-1.21.x`.
+
+When a new Minecraft line becomes the newest, its branches take over `main`, and the previous line moves to its
+own `main-<version>` branch.
+
 ## Building
 
 ```bash
