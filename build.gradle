@@ -6,7 +6,7 @@ def mc = project.property('mc')
 def versionProps = new Properties()
 file("versions/${mc}.properties").withInputStream { versionProps.load(it) }
 
-version = "${project.mod_version}+${mc}"
+version = versionProps.mod_version
 group = project.maven_group
 
 base {
