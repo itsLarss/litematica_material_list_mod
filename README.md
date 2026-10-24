@@ -16,11 +16,11 @@ in the style of the Litematica material list, and keeps it in sync with the webs
 
 ## Versions
 
-| Minecraft     | Jar                               |
-| ------------- | --------------------------------- |
-| 26.1 – 26.1.2 | `schematic-tracker-<v>+26.1.jar`  |
-| 26.2          | `schematic-tracker-<v>+26.2.jar`  |
-| 26.3          | `schematic-tracker-<v>+26.3.jar`  |
+| Minecraft     | Mod version | Jar                                 |
+| ------------- | ----------- | ----------------------------------- |
+| 26.1 – 26.1.2 | 0.1.1       | `schematic-tracker-0.1.1-26.1.jar`  |
+| 26.2          | 0.1.2       | `schematic-tracker-0.1.2-26.2.jar`  |
+| 26.3          | 0.1.3       | `schematic-tracker-0.1.3-26.3.jar`  |
 
 Requires Fabric Loader ≥ 0.19.5, Fabric API and Java 25. Mod Menu is optional.
 
@@ -68,7 +68,8 @@ while the game is paused.
 ./gradlew runClient            # test client
 ```
 
-Each Minecraft version has a file in `versions/` (Minecraft, Fabric API, Mod Menu, supported range).
+Each Minecraft version has a file in `versions/` (Minecraft, Fabric API, Mod Menu, supported range, mod
+version).
 Code that differs between versions lives in `src/compat/<group>/` (26.1.x and 26.2+ keep the current screen in
 different places). The website API is documented in the website repo (`docs/api-v1.md`).
 
