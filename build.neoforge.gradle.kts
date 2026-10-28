@@ -28,6 +28,8 @@ neoForge {
 		register("client") {
 			client()
 			gameDirectory = rootProject.file("run/${sc.current.project}")
+			// Begrenzter Speicher, damit mehrere Clients gleichzeitig laufen können (runClients)
+			jvmArgument("-Xmx${findProperty("clientMemory") ?: "2G"}")
 		}
 	}
 }

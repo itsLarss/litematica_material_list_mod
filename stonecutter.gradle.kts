@@ -34,6 +34,19 @@ tasks.register("buildAll") {
 	dependsOn(stonecutter.tasks.named("buildAndCollect"))
 }
 
+// ./gradlew runClients -Pclients=<auswahl> – startet mehrere Test-Clients gleichzeitig.
+// Auswahl (kommagetrennt): all, fabric, neoforge, eine Minecraft-Version (1.21.4) oder eine Kombination (26.3-neoforge).
+// Beispiel: -Pclients=fabric   oder   -Pclients=1.21.4,26.3-neoforge
+tasks.register("runClients") {
+	group = "run"
+	description = "Starts several test clients at once (-Pclients=all|fabric|neoforge|<version>|<version>-<loader>)"
+	val wanted = (findProperty("clients") as String? ?: "all").split(',').map { it.trim() }.filter { it.isNotEmpty() }
+	dependsOn(stonecutter.tasks.named("runClient") {
+		val project = metadata.project
+		wanted.any { it == "all" || project == it || project.endsWith("-$it") || project.startsWith("$it-") }
+	})
+}
+
 // ./gradlew publishDryRun – legt alle Release-Dateien mit Metadaten unter versions/*/build/publishMods/ ab.
 // Lädt nichts hoch: dryRun ist in den Build-Skripten fest eingeschaltet.
 tasks.register("publishDryRun") {
