@@ -21,7 +21,7 @@ public abstract class CompatScreen extends Screen {
 	/** Eigene Inhalte über den Knöpfen zeichnen. */
 	protected abstract void draw(Gfx g, int mouseX, int mouseY, float delta);
 
-	/** Klick, den kein Knopf genommen hat; button 0 = links, 1 = rechts. */
+	/** Klick, den kein Knopf genommen hat; button mit InputConstants.MOUSE_BUTTON_… vergleichen (ab 26.3 andere Zahlen). */
 	protected boolean clicked(double mouseX, double mouseY, int button) {
 		return false;
 	}

@@ -52,6 +52,9 @@ Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
   ein Nachtrag von schon Gesammeltem) zählte voll ins Tempo, gemessen bis „jetzt“. Behoben: erster Eintrag ist nur
   der Ausgangspunkt, Tempo vom ersten bis zum letzten Eintrag (ruhig zwischen den Einträgen).
 
+- 28.10.: **26.3: Linksklick öffnete das Mengenfeld, Rechtsklick tat nichts** (Liste `K`). Ursache wieder SDL:
+  Maustasten sind ab 26.3 links = 1, rechts = 3 (vorher 0 und 1). Behoben über `InputConstants.MOUSE_BUTTON_…`.
+
 ## Checkliste im Spiel
 
 1. Spiel startet ohne Fehler, Mod erscheint in der Mod-Liste (Fabric: Mod Menu, NeoForge: „Mods“).

@@ -316,7 +316,10 @@ public final class TrackerListScreen extends CompatScreen {
 	/** Klick, den kein Knopf genommen hat (siehe CompatScreen): links = sammeln, rechts = Menge eintragen. */
 	@Override
 	protected boolean clicked(double mouseX, double mouseY, int button) {
-		if (button != 0 && button != 1) return false;
+		// Maustasten über InputConstants: ab 26.3 (SDL) ist links 1 und rechts 3, vorher 0 und 1
+		boolean left = button == InputConstants.MOUSE_BUTTON_LEFT;
+		boolean right = button == InputConstants.MOUSE_BUTTON_RIGHT;
+		if (!left && !right) return false;
 		TrackedList list = SchematicTrackerClient.sync().list();
 		int x = left();
 		if (list == null || !list.canEdit() || mouseX < x || mouseX >= x + panelWidth() || mouseY < TOP) {
@@ -325,7 +328,7 @@ public final class TrackerListScreen extends CompatScreen {
 		int index = scroll + (int) ((mouseY - TOP) / ROW);
 		if (index < scroll || index >= Math.min(rows.size(), scroll + visibleRows())) return false;
 		TrackedItem item = rows.get(index);
-		if (button == 1) {
+		if (right) {
 			openEditor(item);
 			return true;
 		}
