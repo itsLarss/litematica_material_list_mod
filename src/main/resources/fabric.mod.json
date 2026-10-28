@@ -4,18 +4,18 @@
 	"version": "${version}",
 	"name": "Schematic Tracker",
 	"description": "Shows your Schematic Tracker material list in game and keeps it in sync with the website.",
-	"authors": ["Cozyverse"],
+	"authors": ["Schematic Tracker"],
 	"license": "GPL-3.0-only",
 	"icon": "assets/schematic-tracker/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["de.cozyverse.schematictracker.SchematicTrackerClient"],
-		"modmenu": ["de.cozyverse.schematictracker.modmenu.ModMenuIntegration"]
+		"client": ["app.schematictracker.fabric.FabricClient"],
+		"modmenu": ["app.schematictracker.fabric.ModMenuIntegration"]
 	},
 	"depends": {
-		"fabricloader": ">=0.19.5",
-		"minecraft": "${minecraft_range}",
-		"java": ">=25",
+		"fabricloader": ">=${loader}",
+		"minecraft": "${minecraft}",
+		"java": ">=${java}",
 		"fabric-api": "*"
 	},
 	"suggests": {

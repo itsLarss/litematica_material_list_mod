@@ -5,12 +5,9 @@ on:
   pull_request:
 
 jobs:
-  build:
+  # Unit-Tests der reinen Java-Logik (einmal für alle Versionen)
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        mc: ["26.1", "26.2", "26.3"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -18,9 +15,52 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew build -Pmc=${{ matrix.mc }}
+      - run: ./gradlew :core:test
+
+  # Ein Job pro Minecraft-Version und Loader, ein Artefakt pro Kombination.
+  # Liste muss zu settings.gradle.kts passen.
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node:
+          - 1.21-fabric
+          - 1.21-neoforge
+          - 1.21.1-neoforge
+          - 1.21.2-fabric
+          - 1.21.3-fabric
+          - 1.21.3-neoforge
+          - 1.21.4-fabric
+          - 1.21.4-neoforge
+          - 1.21.5-fabric
+          - 1.21.5-neoforge
+          - 1.21.6-fabric
+          - 1.21.7-fabric
+          - 1.21.8-fabric
+          - 1.21.8-neoforge
+          - 1.21.9-fabric
+          - 1.21.10-fabric
+          - 1.21.10-neoforge
+          - 1.21.11-fabric
+          - 1.21.11-neoforge
+          - 26.1-fabric
+          - 26.1-neoforge
+          - 26.2-fabric
+          - 26.2-neoforge
+          - 26.3-fabric
+          - 26.3-neoforge
+    steps:
+      - uses: actions/checkout@v4
+      # Gradle läuft mit Java 25 (Loom 1.19 braucht es); die 1.21-Jars werden trotzdem für Java 21 gebaut.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :${{ matrix.node }}:buildAndCollect
       - uses: actions/upload-artifact@v4
         with:
-          name: schematic-tracker-${{ matrix.mc }}
-          path: build/libs/*.jar
+          name: schematic-tracker-${{ matrix.node }}
+          path: build/libs/*/*.jar
           if-no-files-found: error

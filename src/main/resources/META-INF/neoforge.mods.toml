@@ -1,0 +1,18 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "GPL-3.0-only"
+
+[[mods]]
+modId = "schematic_tracker"
+displayName = "Schematic Tracker"
+version = "${version}"
+authors = "Schematic Tracker"
+description = '''Shows your Schematic Tracker material list in game and keeps it in sync with the website.'''
+${icon_key} = "assets/schematic-tracker/icon.png"
+
+[[dependencies.schematic_tracker]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "CLIENT"
