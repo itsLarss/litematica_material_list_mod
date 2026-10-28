@@ -10,7 +10,7 @@ Die Website liegt im Repo `itsLarss/Litematica_Material_List_Webapp` (eigene `CL
 
 ## 1. Was ist das?
 
-Eine reine **Client-Mod** für Fabric. Sie zeigt die Materialliste von der Schematic-Tracker-Website als kleines HUD
+Eine reine **Client-Mod** für Fabric und NeoForge. Sie zeigt die Materialliste von der Schematic-Tracker-Website als kleines HUD
 im Spiel (im Stil der Litematica-Materialliste) und hält sie live mit der Website synchron. Braucht kein
 Litematica und funktioniert auf jedem Server.
 
@@ -35,35 +35,36 @@ Litematica und funktioniert auf jedem Server.
 
 ## 2. Branches und Versionen
 
-`main` ist **immer die neueste Minecraft-Reihe**. Ältere Reihen haben eigene Branches. Die Reihen haben
-unterschiedliche Build-Setups – **niemals ineinander mergen**.
+Seit 0.2.0 liegen **alle Minecraft-Versionen und beide Loader in einer Codebasis** (Stonecutter).
 
-| Branch        | Minecraft | Wofür                                              |
-| ------------- | --------- | -------------------------------------------------- |
-| `main`        | 26.x      | Release der neuesten Reihe                         |
-| `dev-26.x`    | 26.x      | Entwicklung 26.x → PR nach `main`                  |
-| `dev-main`    | 26.x      | laufende Arbeit → PR nach `dev-26.x`               |
-| `main-1.21.x` | 1.21.x    | Release der 1.21-Reihe                             |
-| `dev-1.21.x`  | 1.21.x    | Entwicklung 1.21.x → PR nach `main-1.21.x`         |
+| Branch     | Wofür                                  |
+| ---------- | -------------------------------------- |
+| `main`     | Releases                               |
+| `dev-main` | laufende Arbeit → PR nach `main`       |
 
-Pull Requests: **base = Ziel**, **compare = Quelle**. Wege: `dev-main → dev-26.x → main` und
-`dev-1.21.x → main-1.21.x`. Der GitHub-Hinweis „ahead of main“ bei den 1.21-Branches ist gewollt und kann
-ignoriert werden.
+Die alten Reihen-Branches (`dev-26.x`, `main-1.21.x`, `dev-1.21.x`) werden nach dem ersten gemeinsamen Release als
+Tags `archive/<branch>` gesichert und gelöscht. Bis dahin nur noch für Hotfixes der alten Versionen.
+
+Pull Requests: **base = Ziel**, **compare = Quelle**.
 
 ### Versionsnummern
 
-Ein Jar pro Minecraft-Version, Name `schematic-tracker-<modversion>.jar`:
+- Eine Mod-Version für alle Kombinationen: `mod.version` in `stonecutter.properties.toml` (ab `0.2.0`).
+- Datei/Modrinth-Version: `<mod.version>+<minecraft>-<loader>`, z. B. `0.2.0+26.3-fabric`.
+- Alte Nummern bis `0.1.3` (`0.0.x-1.21.x`, `0.1.x-26.x`, nur Fabric) bleiben, wie sie sind.
 
-| Minecraft      | Mod-Version     |
-| -------------- | --------------- |
-| 1.21 – 1.21.1  | `0.0.1-1.21`    |
-| 1.21.2 … 1.21.11 | `0.0.<x>-1.21.<x>` (z. B. `0.0.9-1.21.9`) |
-| 26.1 – 26.1.2  | `0.1.1-26.1`    |
-| 26.2           | `0.1.2-26.2`    |
-| 26.3           | `0.1.3-26.3`    |
+### Unterstützte Kombinationen
 
-Die Nummer steht in `versions/<minecraft>.properties` (`mod_version`). Bei einem Update der Mod den vorderen Teil
-hochzählen und in **allen** Versionsdateien der Reihe anpassen.
+| Minecraft        | Fabric                  | NeoForge                                         | Java |
+| ---------------- | ----------------------- | ------------------------------------------------ | ---- |
+| 1.21 – 1.21.1    | ein Jar für beide       | je ein Jar (21.0 / 21.1)                          | 21   |
+| 1.21.2 … 1.21.11 | je ein Jar              | 1.21.3, 1.21.4, 1.21.5, 1.21.8, 1.21.10, 1.21.11  | 21   |
+| 26.1 – 26.1.2    | ein Jar für alle drei   | nur 26.1.2                                        | 25   |
+| 26.2, 26.3       | je ein Jar              | je ein Jar                                        | 25   |
+
+NeoForge nur dort, wo es ein **stabiles** NeoForge-Release gibt (für 1.21.2, 1.21.6, 1.21.7, 1.21.9 und
+26.1.0/26.1.1 gibt es nur Betas). Die NeoForge-Mod-ID ist `schematic_tracker` (NeoForge erlaubt keinen Bindestrich),
+auf Fabric `schematic-tracker`. Sprachdateien, Config-Datei und Texte sind gleich.
 
 ---
 
@@ -71,91 +72,114 @@ hochzählen und in **allen** Versionsdateien der Reihe anpassen.
 
 ### Voraussetzungen
 
-- **JDK 25** zum Ausführen von Gradle (Loom 1.19 braucht es) – auch für den 1.21-Branch.
-  Die 1.21-Jars werden trotzdem für Java 21 gebaut (`release = 21`), die 26.x-Jars für Java 25.
-- Internet beim ersten Build (Minecraft, Fabric, Mod Menu werden geladen).
+- **JDK 25** zum Ausführen von Gradle (Loom 1.19 braucht es). Die 1.21-Jars werden trotzdem für Java 21 gebaut.
+  Zeigt `JAVA_HOME` auf einen kaputten Pfad, vor den Befehl `JAVA_HOME="C:/Program Files/Java/jdk-25.0.4"` setzen.
+- Internet beim ersten Build (Minecraft, Fabric, NeoForge, Mod Menu werden geladen). Der erste Gesamt-Build dauert
+  lange, weil NeoForge Minecraft pro Version neu zusammenbaut (nacheinander, damit der Speicher reicht).
 
 ### Befehle
 
 ```bash
-./gradlew build                 # Standardversion (26.x-Branches: 26.3, 1.21-Branches: 1.21.11)
-./gradlew build -Pmc=26.1       # bestimmte Version, Liste siehe versions/
-./gradlew build -Pmc=1.21.4
-./gradlew test                  # nur die Unit-Tests
-./gradlew runClient -Pmc=26.3   # Minecraft mit der Mod starten (eigener Ordner run/ bzw. run-<version>/)
+./gradlew buildAll                         # Tests + alle Kombinationen → build/libs/<mod.version>/
+./gradlew :26.3-fabric:buildAndCollect     # eine Kombination → build/libs/<mod.version>/
+./gradlew :1.21.4-neoforge:build           # eine Kombination → versions/1.21.4-neoforge/build/libs/
+./gradlew :core:test                       # nur die Unit-Tests
+./gradlew :26.3-fabric:runClient           # Minecraft mit der Mod starten (Ordner run/26.3-fabric/)
+./gradlew publishDryRun                    # Modrinth-/CurseForge-Trockenlauf, lädt NICHTS hoch
 ```
-
-Das fertige Jar liegt in `build/libs/` (die Datei **ohne** `-sources`).
 
 ### Jars von GitHub holen
 
-Jeder Push baut alle Versionen per GitHub Action (`.github/workflows/build.yml`).
-**Actions → oberster Lauf → ganz unten „Artifacts“** – pro Version eine ZIP mit dem Jar (Login nötig, 90 Tage).
+Jeder Push baut alle Kombinationen per GitHub Action (`.github/workflows/build.yml`, ein Job pro Kombination).
+**Actions → oberster Lauf → ganz unten „Artifacts“** – pro Kombination eine ZIP mit dem Jar (Login nötig, 90 Tage).
+Neue Kombination = auch in die Matrix dort eintragen.
 
 ### Testen im Spiel
 
 1. Website lokal oder live laufen lassen (siehe Website-`CLAUDE.md`).
-2. `./gradlew runClient -Pmc=<version>`, Welt anlegen.
+2. `./gradlew :<version>-<loader>:runClient`, Welt anlegen.
 3. `/tracker server http://localhost:3000` (bzw. die echte Adresse), auf der Website Code erzeugen,
    `/tracker link <Code>`.
 4. Prüfen: HUD erscheint, Änderung auf der Website taucht nach ein paar Sekunden auf, `K` öffnet die Liste,
-   Klick setzt „Ich sammle das“ (erscheint im Verlauf der Website).
+   Klick setzt „Ich sammle das“ (erscheint im Verlauf der Website). Auf NeoForge zusätzlich: Mod-Liste →
+   Schematic Tracker → Einstellungen.
 
 Im Entwicklungs-Client heißt der Spieler jedes Mal anders (`Player123`), deshalb ist „Meine“ dort meist leer.
+
+### Teststatus
+
+Siehe `TESTING.md`: Tabelle aller Kombinationen mit „gebaut“ / „im Spiel getestet“. **Nur eintragen, was wirklich
+im Spiel geprüft wurde** – kompiliert ist nicht getestet.
 
 ---
 
 ## 4. Aufbau
 
 ```
-build.gradle, gradle.properties   Build; Zielversion über -Pmc=…
-versions/<mc>.properties          pro Minecraft-Version: Minecraft, Fabric API, Mod Menu, Versionsbereich, Mod-Version
-src/main/java/…/core/             reine Java-Logik ohne Minecraft (testbar)
-  TrackerApi.java                 HTTP-Client für die Website-API v1
-  ListSync.java                   regelmäßiges Abfragen, Status (OK/OFFLINE/GONE), Claims
-  TrackedList.java, TrackedItem   Datenmodell, Teil-Updates einmischen
-  ListView.java                   Filter und Sortierung
-  Amounts.java                    Umrechnung Stacks/SB/DK
-  TrackerLink.java                erkennt Code vs. Freigabe-Link, Website-Adresse normalisieren
-  TrackerConfig.java              Einstellungen (config/schematic-tracker.json)
-src/client/java/…/                Minecraft-Teil
-  SchematicTrackerClient.java     Einstiegspunkt: Config, Tasten, HUD, Befehle, Tick
+settings.gradle.kts               Liste der Kombinationen (Stonecutter), include("core")
+stonecutter.gradle.kts            aktive Version, Konstanten (fabric/neoforge), Ersetzungen, buildAll, publishDryRun
+stonecutter.properties.toml       pro Version/Loader: Fabric API, NeoForge, Mod Menu, Bereiche, Modrinth-Versionen
+build.fabric.gradle.kts           Build für Fabric (Loom über loom-back-compat: verschleiert bis 1.21.x, sonst nicht)
+build.neoforge.gradle.kts         Build für NeoForge (ModDevGradle)
+versions/<mc>-<loader>/           von Stonecutter verwaltete Teilprojekte (nur build/ darin)
+core/                             reine Java-Logik ohne Minecraft (testbar), wird in jedes Jar einkompiliert
+  src/main/java/…/core/
+    TrackerApi.java               HTTP-Client für die Website-API v1
+    ListSync.java                 regelmäßiges Abfragen, Status (OK/OFFLINE/GONE), Claims
+    TrackedList.java, TrackedItem Datenmodell, Teil-Updates einmischen
+    ListView.java                 Filter und Sortierung
+    Amounts.java                  Umrechnung Stacks/SB/DK
+    TrackerLink.java              erkennt Code vs. Freigabe-Link, Website-Adresse normalisieren
+    TrackerConfig.java            Einstellungen (config/schematic-tracker.json)
+  src/test/java/…/core/           JUnit-Tests (inkl. Fake-Server für die API)
+src/main/java/…/                  gemeinsamer Minecraft-Teil
+  SchematicTrackerClient.java     Kern: Config, Tasten, Tick (von den Loadern aufgerufen)
   TrackerHud.java                 das HUD
-  TrackerCommands.java            /tracker …
+  TrackerCommands.java            /tracker … (generisch, Rückmeldung über Feedback)
   Texts.java                      Item-Icon/-Name zur Minecraft-ID, Mengen-Text
   screen/                         Einstellungen, ganze Liste, Schieberegler
-  modmenu/                        Mod-Menu-Anbindung (optional)
-src/compat/<gruppe>/java/…/compat Code, der sich zwischen Minecraft-Versionen unterscheidet
-src/main/resources/               fabric.mod.json, Sprachdateien, Icon
-src/test/java/…/core/             JUnit-Tests (inkl. Fake-Server für die API)
+  compat/                         Versionsunterschiede (Stonecutter-Bedingungen): Gfx, Compat, CompatScreen
+  fabric/                         Fabric-Einstieg, Mod-Menu-Anbindung (nur im Fabric-Jar)
+  neoforge/                       NeoForge-Einstieg inkl. Config-Screen (nur im NeoForge-Jar)
+src/main/resources/               fabric.mod.json, META-INF/neoforge.mods.toml, Sprachdateien, Icon
 ```
 
-### Versionsunterschiede (`src/compat/`)
+### Versionsunterschiede
 
-Gemeinsamer Code ruft nur `Compat.*` bzw. erbt von `CompatScreen`; welche Gruppe gebaut wird, entscheidet
-`build.gradle` anhand von `-Pmc`.
+Der Code in `src/main/` ist immer für die **aktive Version `26.3-fabric`** geschrieben. Stonecutter kommentiert beim
+Bauen die Teile für andere Versionen ein bzw. aus:
 
-**26.x-Branches** (Mojang-Namen ohne Verschleierung, Plugin `net.fabricmc.fabric-loom`, Java 25):
+```java
+//? if >=1.21.6 {
+g.pose().pushMatrix();
+//?} else {
+/*g.pose().pushPose();
+*///?}
+```
 
-| Gruppe | Versionen     | Unterschied                                        |
-| ------ | ------------- | -------------------------------------------------- |
-| `26.1` | 26.1 – 26.1.2 | aktueller Bildschirm über `Minecraft.screen`       |
-| `26.2` | 26.2, 26.3    | aktueller Bildschirm über `Minecraft.gui.screen()` |
+Loader-Unterschiede: `//? if fabric { … }` bzw. `neoforge`; außerdem landet `fabric/` nur im Fabric-Jar und
+`neoforge/` nur im NeoForge-Jar. `ResourceLocation` (bis 1.21.10) ↔ `Identifier` ersetzt Stonecutter automatisch.
 
-**1.21-Branches** (verschleiert, Plugin `fabric-loom` mit Mojang-Mappings, Java 21):
+| Ab Version | Unterschied                                                                    | Stelle                           |
+| ---------- | ------------------------------------------------------------------------------ | -------------------------------- |
+| 1.21.6     | HUD über `HudElementRegistry` (vorher `HudRenderCallback`), 2D-Matrix, Tooltip | `Gfx`, `fabric/`                 |
+| 1.21.9     | Tasten-Kategorien als Objekt, Maus-Events (`MouseButtonEvent`)                 | `Compat`, `CompatScreen`         |
+| 1.21.11    | `Identifier` statt `ResourceLocation`, neuer CycleButton-Builder               | Ersetzung, `Compat`              |
+| 26.1       | unverschleiert, Java 25, `GuiGraphicsExtractor`, `KeyMappingHelper`            | `Gfx`, `CompatScreen`, `fabric/` |
+| 26.2       | aktueller Bildschirm über `Minecraft.gui`                                      | `Compat`                         |
 
-| Gruppe    | Versionen        | Unterschied                                                      |
-| --------- | ---------------- | ---------------------------------------------------------------- |
-| `1.21`    | 1.21 – 1.21.5    | HUD über `HudRenderCallback`, `PoseStack`, `renderTooltip`       |
-| `1.21.6`  | 1.21.6 – 1.21.8  | neues GUI-Rendering: `HudElementRegistry`, 2D-Matrix             |
-| `1.21.9`  | 1.21.9 – 1.21.10 | Tasten-Kategorien, Maus-Events (`MouseButtonEvent`)              |
-| `1.21.11` | 1.21.11          | `ResourceLocation` heißt `Identifier`, neuer CycleButton-Builder |
+Auf NeoForge ab 1.21.9 die Tasten-Kategorie **nicht** über `KeyMapping.Category.register` anlegen (wirft sonst
+„already registered“), sondern über `RegisterKeyMappingsEvent#registerCategory` (siehe `Compat`).
+
+Eine andere Version aktiv schalten (z. B. zum Bearbeiten in der IDE): `./gradlew "Set active project to 1.21.4-fabric"`.
+**Vor dem Commit wieder auf `26.3-fabric` schalten**, sonst ändert sich jede Datei mit Bedingungen.
 
 Neue Minecraft-Version hinzufügen:
-1. `versions/<mc>.properties` anlegen (Fabric-API-Version: maven.fabricmc.net, Mod Menu: maven.terraformersmc.com).
-2. `./gradlew build -Pmc=<mc>` – Kompilierfehler zeigen, was sich geändert hat.
-3. Wenn nötig neue Compat-Gruppe anlegen und in `build.gradle` zuordnen.
-4. Im Spiel testen (Abschnitt 3), Version in `.github/workflows/build.yml` ergänzen.
+1. In `settings.gradle.kts` eintragen (`mc("26.4", "fabric", "neoforge")`), Abschnitte in
+   `stonecutter.properties.toml` ergänzen (Fabric API: maven.fabricmc.net, Mod Menu: maven.terraformersmc.com,
+   NeoForge: maven.neoforged.net – nur stabile Versionen).
+2. `./gradlew :26.4-fabric:build` – Kompilierfehler zeigen, was sich geändert hat; Bedingungen in `compat/` ergänzen.
+3. In `.github/workflows/build.yml` und `TESTING.md` eintragen, im Spiel testen.
 
 ---
 
@@ -165,6 +189,8 @@ Neue Minecraft-Version hinzufügen:
   (nur Header `X-Share-Token`).
 - **HTTP/1.1 erzwingen** (`TrackerApi`): Javas HttpClient versucht bei `http://` sonst ein HTTP/2-Upgrade, das
   z. B. Node-Server abbrechen.
+- Befehle, Tasten und HUD meldet die jeweilige Loader-Schicht an; gemeinsamer Code importiert nie Fabric- oder
+  NeoForge-Klassen.
 - Antworten werden immer über `Minecraft.execute` angewendet, damit HUD und Menüs nie einen halben Stand sehen.
 - Unbekannte Item-IDs (z. B. aus neueren Versionen) → kein Icon, englischer Name aus der Liste.
 - Befehle, die einen Bildschirm öffnen, merken ihn vor (`openLater`), weil der Chat sonst gleich wieder schließt.
@@ -181,14 +207,17 @@ Neue Minecraft-Version hinzufügen:
 - Commit-Nachrichten auf Deutsch, kurz und sachlich.
 - Neue Texte immer in `en_us.json` **und** `de_de.json` (gleiche Schlüssel).
 - Neue Logik möglichst in `core/` (ohne Minecraft) mit JUnit-Test.
-- Änderungen an einer Reihe **getrennt** in die andere übernehmen (Code kopieren und anpassen, nicht mergen).
+- Versionsunterschiede nur über Stonecutter-Bedingungen in `compat/` bzw. den Loader-Schichten, kein Copy-Paste.
 - Modrinth-Texte (Beschreibung, Changelogs): Englisch, ohne Emojis.
 
 ### Modrinth
 
-- Environment: Client only · Loader: Fabric · Abhängigkeiten: Fabric API (required), Mod Menu (optional).
-- Game Versions pro Jar wie in der Tabelle in Abschnitt 2 (beim 1.21-Jar 1.21 **und** 1.21.1 anhaken,
-  beim 26.1-Jar 26.1, 26.1.1 und 26.1.2).
+- Environment: Client only · Loader: Fabric bzw. NeoForge · Abhängigkeiten (Fabric): Fabric API (required),
+  Mod Menu (optional).
+- Game Versions pro Jar stehen in `stonecutter.properties.toml` (`mod.mc_releases`) und werden beim Release
+  übernommen.
+- `./gradlew publishDryRun` legt alle Release-Dateien mit Metadaten unter `versions/*/build/publishMods/` ab,
+  **ohne** etwas hochzuladen. Echtes Veröffentlichen ist bewusst nicht eingebaut.
 
 ---
 
