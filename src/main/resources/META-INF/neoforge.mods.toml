@@ -8,7 +8,7 @@ displayName = "Schematic Tracker"
 version = "${version}"
 authors = "Cozyverse"
 description = '''Shows your Schematic Tracker material list in game and keeps it in sync with the website.'''
-logoFile = "assets/schematic-tracker/icon.png"
+${icon_key} = "assets/schematic-tracker/icon.png"
 
 [[dependencies.schematic_tracker]]
 modId = "minecraft"

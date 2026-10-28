@@ -49,6 +49,8 @@ tasks {
 		val props = mapOf(
 			"version" to modVersion,
 			"minecraft" to sc.properties.get<String>("mod.mc_compat"),
+			// Ab 26.1 heißt das quadratische Icon iconFile (logoFile ist dort veraltet)
+			"icon_key" to if (javaVersion >= 25) "iconFile" else "logoFile",
 		)
 		inputs.properties(props)
 		filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
