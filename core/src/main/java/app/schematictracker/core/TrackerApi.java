@@ -49,7 +49,7 @@ public final class TrackerApi {
 	public record Pairing(String token, String listId, String name, String role) {}
 
 	public record ListResponse(String id, String name, String role, long version, boolean partial,
-			List<TrackedItem> items) {}
+			List<TrackedItem> items, String note) {}
 
 	public record AmountChange(String id, int have, boolean farmed) {}
 
@@ -103,10 +103,17 @@ public final class TrackerApi {
 					i.get("stackSize").getAsInt(),
 					i.get("farmed").getAsBoolean(),
 					str(i, "claimedBy"),
-					position++));
+					position++,
+					optStr(i, "note")));
 		}
 		return new ListResponse(str(o, "id"), str(o, "name"), str(o, "role"), o.get("version").getAsLong(),
-				o.get("partial").getAsBoolean(), items);
+				o.get("partial").getAsBoolean(), items, optStr(o, "note"));
+	}
+
+	/** Feld, das erst später in v1 dazukam: fehlt es oder ist es null, kommt null zurück */
+	static String optStr(JsonObject o, String key) {
+		JsonElement e = o.get(key);
+		return e == null || e.isJsonNull() ? null : e.getAsString();
 	}
 
 	private HttpRequest.Builder request(String server, String path, String token) {

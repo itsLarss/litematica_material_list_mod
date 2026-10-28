@@ -31,6 +31,8 @@ public final class TrackerHud {
 	static final int GREEN = 0xFF55FF55;
 	static final int RED = 0xFFFF5555;
 	static final int CYAN = 0xFF55FFFF;
+	/** Höchstbreite einer Material-Notiz im HUD (Kurzfassung) */
+	static final int NOTE_WIDTH = 90;
 
 	private TrackerHud() {}
 
@@ -71,8 +73,13 @@ public final class TrackerHud {
 			}
 		}
 
+		// Notizen (nur mit Mitbearbeiten-Link und neuerer Website; sonst null und still ausgeblendet)
+		String listNote = config.hudNotes && list != null && list.note() != null
+				? Texts.shorten(font, "✎ " + Texts.oneLine(list.note()), NOTE_WIDTH * 2) : null;
+
 		// Spalten ausmessen
 		List<String> names = new ArrayList<>();
+		List<String> notes = new ArrayList<>();
 		List<String> amounts = new ArrayList<>();
 		int nameWidth = 0;
 		int amountWidth = 0;
@@ -81,9 +88,11 @@ public final class TrackerHud {
 			String amount = item.complete()
 					? Component.translatable("schematic-tracker.hud.done").getString()
 					: Texts.missing(item, config.unit);
+			String note = config.hudNotes && item.hasNote() ? Texts.shorten(font, Texts.oneLine(item.note()), NOTE_WIDTH) : null;
 			names.add(name);
+			notes.add(note);
 			amounts.add(amount);
-			nameWidth = Math.max(nameWidth, font.width(name));
+			nameWidth = Math.max(nameWidth, font.width(name) + (note == null ? 0 : 6 + font.width(note)));
 			amountWidth = Math.max(amountWidth, font.width(amount));
 		}
 		String filterHint = config.filter == ListView.Filter.MINE
@@ -98,7 +107,8 @@ public final class TrackerHud {
 		int width = PAD * 2 + Math.max(titleWidth, Math.max(rowsWidth,
 				Math.max(emptyText == null ? 0 : font.width(emptyText), more == null ? 0 : font.width(more))));
 		if (session != null) width = Math.max(width, PAD * 2 + font.width(session));
-		int height = PAD + TITLE + shown.size() * ROW + (emptyText != null ? 11 : 0) + (more != null ? 11 : 0)
+		if (listNote != null) width = Math.max(width, PAD * 2 + font.width(listNote));
+		int height = PAD + TITLE + (listNote != null ? 11 : 0) + shown.size() * ROW + (emptyText != null ? 11 : 0) + (more != null ? 11 : 0)
 				+ (session != null ? 11 : 0) + PAD - 2;
 
 		float scale = config.scale / 100f;
@@ -128,6 +138,10 @@ public final class TrackerHud {
 		}
 		if (!filterHint.isEmpty()) g.text(font, filterHint, x + width - PAD - font.width(filterHint), cy, GRAY);
 		cy += TITLE;
+		if (listNote != null) {
+			g.text(font, listNote, x + PAD, cy, GRAY);
+			cy += 11;
+		}
 
 		for (int i = 0; i < shown.size(); i++) {
 			TrackedItem item = shown.get(i);
@@ -136,6 +150,7 @@ public final class TrackerHud {
 			int textY = cy + 4;
 			int color = item.complete() ? GREEN : WHITE;
 			g.text(font, names.get(i), x + PAD + 20, textY, item.claimedBy(player) ? 0xFFFFFF80 : color);
+			if (notes.get(i) != null) g.text(font, notes.get(i), x + PAD + 20 + font.width(names.get(i)) + 6, textY, GRAY);
 			String amount = amounts.get(i);
 			g.text(font, amount, x + width - PAD - font.width(amount), textY, item.complete() ? GREEN : ORANGE);
 			cy += ROW;

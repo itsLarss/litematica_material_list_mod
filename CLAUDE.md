@@ -37,6 +37,9 @@ Litematica und funktioniert auf jedem Server.
   1 Minute Laufzeit, Restzeit = fehlend / Tempo für das zuletzt erhöhte Material. Start beim ersten Eintrag,
   Neustart per `/tracker session start`, Taste (ohne Standardbelegung) oder Einstellungen; HUD-Zeile abschaltbar
   (`hudSession`). Nur im Speicher, nicht in der Config.
+- **Notizen (nur lesen):** `note` und `items[].note` aus API v1 (`TrackerApi.optStr`: fehlendes Feld = null, so
+  bleibt es bei älteren Websites und Nur-Ansehen-Links still aus). HUD kurz (abschaltbar, `hudNotes`), Liste `K`
+  voll im Notizbereich unten (Material unter der Maus, sonst Listen-Notiz). Schreiben geht nur auf der Website.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
   eigener Name für „Meine“, Fertig-Meldung/-Ton/Konfetti.

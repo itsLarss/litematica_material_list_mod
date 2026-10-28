@@ -31,6 +31,9 @@ public final class TrackerListScreen extends CompatScreen {
 	private static final int TOP = 56;
 	/** Höhe des Eingabebereichs für Mengen unter der Liste */
 	private static final int EDITOR = 36;
+	/** Notizbereich unter der Liste: Überschrift + 3 Zeilen */
+	private static final int NOTE_LINES = 3;
+	private static final int NOTES = 12 + NOTE_LINES * 10 + 4;
 	private static final int GLFW_KEY_ENTER = 257;
 	private static final int GLFW_KEY_KP_ENTER = 335;
 	private static final int GLFW_KEY_ESCAPE = 256;
@@ -43,6 +46,7 @@ public final class TrackerListScreen extends CompatScreen {
 	private String editingId;
 	private EditBox amountField;
 	private String amountText = "";
+	private boolean notesShown;
 
 	public TrackerListScreen(Screen parent) {
 		super(Component.translatable("schematic-tracker.list.title"));
@@ -58,7 +62,16 @@ public final class TrackerListScreen extends CompatScreen {
 	}
 
 	private int visibleRows() {
-		return Math.max(1, (height - TOP - 36 - (editingId != null ? EDITOR : 0)) / ROW);
+		return Math.max(1, (height - TOP - 36 - (editingId != null ? EDITOR : 0) - (hasNotes() ? NOTES : 0)) / ROW);
+	}
+
+	/** Gibt es überhaupt Notizen? Sonst bleibt der Bereich weg (Nur-Ansehen-Link, ältere Website). Einmal pro Tick. */
+	private boolean hasNotes() {
+		return notesShown;
+	}
+
+	private int notesTop() {
+		return editorTop() + (editingId != null ? EDITOR : 0);
 	}
 
 	private int editorTop() {
@@ -182,6 +195,7 @@ public final class TrackerListScreen extends CompatScreen {
 		rows = list == null
 				? List.of()
 				: ListView.select(list.items(), c.filter, c.sort, SchematicTrackerClient.playerName(), Texts::name);
+		notesShown = list != null && (list.note() != null || list.items().stream().anyMatch(TrackedItem::hasNote));
 		scroll = Math.clamp(scroll, 0, Math.max(0, rows.size() - visibleRows()));
 		// Material verschwunden (z. B. Liste gewechselt): Eingabe schließen
 		if (editingId != null && editing() == null) closeEditor();
@@ -229,7 +243,9 @@ public final class TrackerListScreen extends CompatScreen {
 			ItemStack stack = Texts.stack(item);
 			if (!stack.isEmpty()) g.item(stack, x + 4, y + 2);
 			boolean mine = item.claimedBy(player);
-			g.text(font, Texts.name(item), x + 24, y + 6, item.complete() ? 0xFF55FF55 : mine ? 0xFFFFFF80 : 0xFFFFFFFF);
+			String name = Texts.name(item);
+			g.text(font, name, x + 24, y + 6, item.complete() ? 0xFF55FF55 : mine ? 0xFFFFFF80 : 0xFFFFFFFF);
+			if (item.hasNote()) g.text(font, "✎", x + 24 + font.width(name) + 4, y + 6, 0xFFAAAAAA);
 			String right = item.complete()
 					? Component.translatable("schematic-tracker.hud.done").getString()
 					: Texts.missing(item, c.unit);
@@ -244,6 +260,8 @@ public final class TrackerListScreen extends CompatScreen {
 			g.centered(font, Component.translatable(c.filter == ListView.Filter.MINE
 					? "schematic-tracker.hud.none_mine" : "schematic-tracker.hud.all_done"), width / 2, TOP + 10, 0xFFAAAAAA);
 		}
+
+		if (hasNotes()) drawNotes(g, list, hovered != null && hovered.hasNote() ? hovered : editing());
 
 		TrackedItem editing = editing();
 		if (editing != null) {
@@ -260,6 +278,30 @@ public final class TrackerListScreen extends CompatScreen {
 			g.tooltip(font, Component.translatable("schematic-tracker.list.tooltip",
 					hovered.have(), hovered.total(),
 					hovered.claimedBy() == null ? "-" : hovered.claimedBy()), mouseX, mouseY);
+		}
+	}
+
+	/** Volle Notiz: zum Material unter der Maus bzw. in Bearbeitung, sonst zur Liste */
+	private void drawNotes(Gfx g, TrackedList list, TrackedItem item) {
+		int x = left();
+		int y = notesTop();
+		String text;
+		Component heading;
+		if (item != null && item.hasNote()) {
+			heading = Component.translatable("schematic-tracker.note.item", Texts.name(item));
+			text = item.note();
+		} else if (list.note() != null) {
+			heading = Component.translatable("schematic-tracker.note.list");
+			text = list.note();
+		} else {
+			g.text(font, Component.translatable("schematic-tracker.note.hover"), x, y, 0xFF888888);
+			return;
+		}
+		g.text(font, heading, x, y, 0xFFAAAAAA);
+		int ly = y + 12;
+		for (String line : Texts.wrap(font, text, panelWidth(), NOTE_LINES)) {
+			g.text(font, line, x, ly, 0xFFFFFFFF);
+			ly += 10;
 		}
 	}
 

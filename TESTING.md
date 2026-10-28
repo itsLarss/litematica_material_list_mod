@@ -90,3 +90,16 @@ Tabelle oben nachtragen).
     `/tracker session stop` blendet die Zeile aus.
 27. Steuerung → Tastenbelegung: „Farm-Session starten/neu starten“ (ohne Standardtaste) belegen und drücken → Toast.
 28. Einstellungen: „Farm-Session im HUD“ aus → Zeile weg; „Farm-Session neu starten“-Knopf → Toast.
+
+### Neu: Notizen (Feature 4)
+
+Braucht eine Website mit Notizen (Stand `dev-main` der Website, z. B. lokal oder Vercel-Preview) und den
+Mitbearbeiten-Link bzw. Kopplungscode – über Nur-Ansehen-Links liefert die Website keine Notizen.
+
+29. Auf der Website Notiz zur Liste und zu einem Material schreiben → nach wenigen Sekunden im HUD: Listen-Notiz
+    grau unter dem Titel (gekürzt mit „…“), Material-Notiz grau hinter dem Namen (gekürzt).
+30. `K`: Materialien mit Notiz haben ein ✎; Maus darüber → unten „Notiz zu …“ mit vollem Text (bis 3 Zeilen).
+    Ohne Maus über einem Material: Notiz zur Liste. Mehrzeilige Notiz wird umgebrochen.
+31. Notiz auf der Website löschen → verschwindet im Spiel. Gar keine Notizen → kein Notizbereich in der Liste.
+32. Einstellungen „Notizen im HUD“ aus → HUD ohne Notizen, Liste (K) zeigt sie weiter.
+33. Live-Website ohne Notizen (aktueller Stand `main`) → keine Fehler, einfach keine Notizen.

@@ -116,5 +116,10 @@
   "schematic-tracker.session.idle": "Farm session running for %s, nothing entered yet.",
   "schematic-tracker.session.status": "Farm session %s · %s: +%s · %s/h · ~%s left",
   "schematic-tracker.config.hud_session": "Farm session in HUD",
-  "schematic-tracker.config.restart_session": "Restart farm session"
+  "schematic-tracker.config.restart_session": "Restart farm session",
+
+  "schematic-tracker.note.item": "Note on %s:",
+  "schematic-tracker.note.list": "Note on the list:",
+  "schematic-tracker.note.hover": "✎ Hover a material to read its note.",
+  "schematic-tracker.config.hud_notes": "Notes in HUD"
 }

@@ -18,6 +18,8 @@ in the style of the Litematica material list, and keeps it in sync with the webs
 - **Farm session:** counts what you enter in the mod and shows items per hour and the estimated time left for the
   material you're farming right now (an extra line in the HUD). Starts with your first entry; restart it with
   `/tracker session start`, a key (unbound by default, see Controls) or the settings.
+- **Notes:** notes from the website (on the list and on materials, e.g. coordinates) show up short in the HUD and in
+  full in the list (`K`, hover a material). Read only; only with a co-edit connection, never via view-only links.
 - **Settings** via Mod Menu, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
   unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
   done message, sound and confetti.

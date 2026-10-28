@@ -10,4 +10,5 @@
   Each can be turned off in the settings.
 - Farm session: items per hour and estimated time left for the material you're farming, shown in the HUD.
   Restart with `/tracker session start`, a key or the settings.
+- Notes from the website: short in the HUD, in full in the list (`K`). Only with a co-edit connection.
 - Your settings in `config/schematic-tracker.json` are kept.
