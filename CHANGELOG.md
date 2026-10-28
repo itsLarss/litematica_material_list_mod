@@ -8,4 +8,6 @@
   `/tracker set <item> <amount>` (`hand` = the item in your hand).
 - Done notifications: a toast and a sound when a material is complete, confetti when the whole list is done.
   Each can be turned off in the settings.
+- Farm session: items per hour and estimated time left for the material you're farming, shown in the HUD.
+  Restart with `/tracker session start`, a key or the settings.
 - Your settings in `config/schematic-tracker.json` are kept.

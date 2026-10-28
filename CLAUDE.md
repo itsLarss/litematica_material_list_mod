@@ -33,11 +33,15 @@ Litematica und funktioniert auf jedem Server.
   Animation über `Gfx`, keine Partikel). Erkennung in `core/Completions` (beim ersten Laden still), Anzeige in
   `Notifications`. Einzeln abschaltbar (`notifyToast`, `notifySound`, `notifyConfetti`), „Vorschau“ in den
   Einstellungen. Toast-API je Version in `Compat.toast` (bis 1.21.1 `getToasts()`, ab 26.2 `gui.toastManager()`).
+- **Farm-Session:** `core/FarmSession` zählt eigene Zuwächse (über `ListSync.onOwnAmount`), Tempo pro Stunde ab
+  1 Minute Laufzeit, Restzeit = fehlend / Tempo für das zuletzt erhöhte Material. Start beim ersten Eintrag,
+  Neustart per `/tracker session start`, Taste (ohne Standardbelegung) oder Einstellungen; HUD-Zeile abschaltbar
+  (`hudSession`). Nur im Speicher, nicht in der Config.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
   eigener Name für „Meine“, Fertig-Meldung/-Ton/Konfetti.
 - **Befehle:** `/tracker` (Status), `link`, `unlink`, `server`, `status`, `refresh`, `hud [on|off]`,
-  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`, `add <item> <menge>`, `set <item> <menge>`.
+  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`, `add <item> <menge>`, `set <item> <menge>`, `session [start|stop]`.
 - **Sprachen:** Englisch und Deutsch (`en_us.json`, `de_de.json`), richtet sich nach der Spielsprache.
 
 ---

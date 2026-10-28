@@ -103,5 +103,18 @@
   "schematic-tracker.config.notify_toast": "Fertig-Meldung",
   "schematic-tracker.config.notify_sound": "Fertig-Ton",
   "schematic-tracker.config.notify_confetti": "Konfetti",
-  "schematic-tracker.config.notify_preview": "Vorschau"
+  "schematic-tracker.config.notify_preview": "Vorschau",
+
+  "key.schematic-tracker.restart_session": "Farm-Session starten/neu starten",
+  "schematic-tracker.hud.session": "⏱ %s: %s/h · noch ~%s",
+  "schematic-tracker.hud.session_wait": "⏱ %s: +%s (Tempo ab 1 min)",
+  "schematic-tracker.hud.session_done": "⏱ %s: fertig",
+  "schematic-tracker.session.started": "Farm-Session gestartet",
+  "schematic-tracker.session.started_hint": "Ab jetzt zählen deine Einträge.",
+  "schematic-tracker.session.stopped": "Farm-Session beendet.",
+  "schematic-tracker.session.none": "Keine Farm-Session. Sie startet mit deinem ersten Eintrag oder mit /tracker session start.",
+  "schematic-tracker.session.idle": "Farm-Session läuft seit %s, noch nichts eingetragen.",
+  "schematic-tracker.session.status": "Farm-Session %s · %s: +%s · %s/h · noch ~%s",
+  "schematic-tracker.config.hud_session": "Farm-Session im HUD",
+  "schematic-tracker.config.restart_session": "Farm-Session neu starten"
 }

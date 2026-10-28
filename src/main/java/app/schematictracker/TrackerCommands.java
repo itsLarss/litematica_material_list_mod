@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import app.schematictracker.compat.Compat;
+import app.schematictracker.core.FarmSession;
 import app.schematictracker.core.ItemMatch;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.QuickAmount;
@@ -30,7 +31,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * /tracker link|unlink|server|status|refresh|hud|filter|sort|list|config|add|set
+ * /tracker link|unlink|server|status|refresh|hud|filter|sort|list|config|add|set|session
  * Unabhängig vom Loader: der Befehlsbaum ist generisch, Rückmeldungen laufen über {@link Feedback}.
  */
 public final class TrackerCommands {
@@ -118,6 +119,18 @@ public final class TrackerCommands {
 							.then(argument("amount", StringArgumentType.greedyString())
 									.executes(ctx -> amount(out(ctx), StringArgumentType.getString(ctx, "item"),
 											StringArgumentType.getString(ctx, "amount"), false)))))
+					.then(literal("session")
+							.executes(ctx -> session(out(ctx)))
+							.then(literal("start").executes(ctx -> {
+								SchematicTrackerClient.restartSession(Minecraft.getInstance());
+								out(ctx).ok(Component.translatable("schematic-tracker.session.started"));
+								return 1;
+							}))
+							.then(literal("stop").executes(ctx -> {
+								SchematicTrackerClient.session().stop();
+								out(ctx).ok(Component.translatable("schematic-tracker.session.stopped"));
+								return 1;
+							})))
 					.then(literal("list").executes(ctx -> {
 						SchematicTrackerClient.openLater(new TrackerListScreen(null));
 						return 1;
@@ -275,6 +288,29 @@ public final class TrackerCommands {
 		sync.setHave(item, value.getAsInt(), SchematicTrackerClient.playerName());
 		TrackedItem now = list.item(item.id());
 		source.ok(Texts.amountSaved(now));
+		return 1;
+	}
+
+	/** /tracker session: Tempo und Restzeit des aktuellen Materials */
+	private static int session(Feedback source) {
+		FarmSession session = SchematicTrackerClient.session();
+		TrackedList list = SchematicTrackerClient.sync().list();
+		if (!session.running()) {
+			source.ok(Component.translatable("schematic-tracker.session.none"));
+			return 1;
+		}
+		long now = System.currentTimeMillis();
+		String elapsed = FarmSession.formatDuration(session.elapsedMs(now));
+		TrackedItem item = list == null || session.currentId() == null ? null : list.item(session.currentId());
+		if (item == null) {
+			source.ok(Component.translatable("schematic-tracker.session.idle", elapsed));
+			return 1;
+		}
+		double rate = session.perHour(item.id(), now);
+		long remaining = session.remainingMs(item, now);
+		source.ok(Component.translatable("schematic-tracker.session.status", elapsed, Texts.name(item),
+				session.gained(item.id()), rate < 0 ? "-" : String.valueOf(Math.round(rate)),
+				remaining < 0 ? "-" : FarmSession.formatDuration(remaining)));
 		return 1;
 	}
 
