@@ -1,5 +1,9 @@
 package app.schematictracker.core;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -16,6 +20,8 @@ public final class ListSync {
 	static final long IDLE_AFTER_MS = 120_000;
 	static final long ERROR_MS = 10_000;
 	static final long GONE_MS = 60_000;
+	/** Eigene Mengen werden gesammelt und kurz verzögert gespeichert, wie auf der Website. */
+	static final long SAVE_DELAY_MS = 600;
 
 	public enum Status {
 		/** Nicht verbunden */
@@ -41,6 +47,26 @@ public final class ListSync {
 	private long lastChangeAt;
 	private int generation;
 	private String lastError;
+
+	/**
+	 * Eigene Mengen, die der Server noch nicht (sicher) hat. Sie haben Vorrang vor abgerufenen Daten, bis ein Abruf
+	 * zurückkommt, der nach dem Speichern gestartet wurde.
+	 */
+	private final Map<String, LocalAmount> localAmounts = new LinkedHashMap<>();
+	private boolean saving;
+	private long saveAt;
+	private long pollStartedAt;
+	private String actor;
+
+	private static final class LocalAmount {
+		TrackerApi.AmountChange change;
+		/** Zeitpunkt der Bestätigung durch den Server, 0 = noch nicht gespeichert */
+		long savedAt;
+
+		LocalAmount(TrackerApi.AmountChange change) {
+			this.change = change;
+		}
+	}
 
 	public ListSync(TrackerApi api, Supplier<TrackerConfig> config, Executor mainThread) {
 		this.api = api;
@@ -73,6 +99,8 @@ public final class ListSync {
 		loadedFor = "";
 		inFlight = false;
 		nextPollAt = 0;
+		localAmounts.clear();
+		saving = false;
 		status = config.get().linked() ? Status.LOADING : Status.UNLINKED;
 	}
 
@@ -85,10 +113,12 @@ public final class ListSync {
 			return;
 		}
 		if (!key.equals(loadedFor) && list != null) reset();
+		if (!saving && now >= saveAt && localAmounts.values().stream().anyMatch(l -> l.savedAt == 0)) saveAmounts(c);
 		if (!active || inFlight || now < nextPollAt) return;
 
 		inFlight = true;
 		int gen = generation;
+		long pollStart = System.currentTimeMillis();
 		long since = list == null ? -1 : list.version();
 		api.list(c.server, c.token, since).whenComplete((res, err) -> mainThread.execute(() -> {
 			if (gen != generation) return;
@@ -110,6 +140,8 @@ public final class ListSync {
 			} else {
 				changed = list.apply(res.name(), res.role(), res.version(), res.partial(), res.items());
 			}
+			pollStartedAt = pollStart;
+			applyLocalAmounts();
 			if (changed || lastChangeAt == 0) lastChangeAt = done;
 			status = Status.OK;
 			lastError = null;
@@ -130,6 +162,75 @@ public final class ListSync {
 			if (err != null) list.replace(item);
 			refresh();
 		}));
+	}
+
+	/**
+	 * Eigene Menge für ein Material setzen (volle Menge, kein Unterschied). Sofort lokal sichtbar, gespeichert wird
+	 * gesammelt nach {@link #SAVE_DELAY_MS}. "Gefarmt" bleibt nur, solange die Menge reicht (wie auf der Website).
+	 */
+	public boolean setHave(TrackedItem item, int have, String player) {
+		if (list == null || !list.canEdit() || list.item(item.id()) == null) return false;
+		TrackedItem current = list.item(item.id());
+		int value = Math.clamp(have, 0, QuickAmount.MAX);
+		boolean farmed = current.farmed() && value >= current.total();
+		TrackerApi.AmountChange change = new TrackerApi.AmountChange(current.id(), value, farmed);
+		LocalAmount local = localAmounts.computeIfAbsent(current.id(), id -> new LocalAmount(change));
+		local.change = change;
+		local.savedAt = 0;
+		list.replace(withAmount(current, value, farmed));
+		actor = player;
+		long now = System.currentTimeMillis();
+		saveAt = now + SAVE_DELAY_MS;
+		lastChangeAt = now;
+		return true;
+	}
+
+	/** true, solange eigene Mengen noch nicht gespeichert sind (z. B. für einen Hinweis im HUD). */
+	public boolean savePending() {
+		return saving || localAmounts.values().stream().anyMatch(l -> l.savedAt == 0);
+	}
+
+	private void saveAmounts(TrackerConfig c) {
+		List<TrackerApi.AmountChange> batch = new ArrayList<>();
+		for (LocalAmount l : localAmounts.values()) if (l.savedAt == 0) batch.add(l.change);
+		saving = true;
+		int gen = generation;
+		api.saveAmounts(c.server, c.token, batch, actor).whenComplete((ok, err) -> mainThread.execute(() -> {
+			if (gen != generation) return;
+			saving = false;
+			long done = System.currentTimeMillis();
+			if (err != null) {
+				// Bleibt lokal sichtbar und wird später erneut gesendet
+				Throwable cause = err.getCause() != null ? err.getCause() : err;
+				lastError = cause.getMessage();
+				int code = statusOf(err);
+				if (code == 404) {
+					localAmounts.clear();
+					status = Status.GONE;
+				}
+				saveAt = done + ERROR_MS;
+				return;
+			}
+			for (TrackerApi.AmountChange sent : batch) {
+				LocalAmount l = localAmounts.get(sent.id());
+				if (l != null && l.change.equals(sent)) l.savedAt = done;
+			}
+			refresh();
+		}));
+	}
+
+	/** Nach einem Abruf: eigene, noch nicht bestätigte Mengen wieder darüberlegen. */
+	private void applyLocalAmounts() {
+		localAmounts.values().removeIf(l -> l.savedAt != 0 && l.savedAt <= pollStartedAt);
+		for (LocalAmount l : localAmounts.values()) {
+			TrackedItem item = list.item(l.change.id());
+			if (item != null) list.replace(withAmount(item, l.change.have(), l.change.farmed()));
+		}
+	}
+
+	private static TrackedItem withAmount(TrackedItem i, int have, boolean farmed) {
+		return new TrackedItem(i.id(), i.name(), i.itemId(), i.total(), have, i.stackSize(), farmed, i.claimedBy(),
+				i.position());
 	}
 
 	private static TrackedItem withClaim(TrackedItem i, String claimedBy) {

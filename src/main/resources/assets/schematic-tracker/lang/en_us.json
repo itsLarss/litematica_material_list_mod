@@ -79,8 +79,20 @@
   "schematic-tracker.list.title": "Material list",
   "schematic-tracker.list.settings": "Settings…",
   "schematic-tracker.list.you": "you",
-  "schematic-tracker.list.hint": "Click a material to collect it yourself or release it.",
+  "schematic-tracker.list.hint": "Click: collect it yourself / release · Right-click: enter amount",
   "schematic-tracker.list.claimed": "You're collecting %s now.",
   "schematic-tracker.list.released": "Released %s.",
-  "schematic-tracker.list.tooltip": "%s / %s collected · collecting: %s"
+  "schematic-tracker.list.tooltip": "%s / %s collected · collecting: %s",
+
+  "schematic-tracker.amount.field": "Amount",
+  "schematic-tracker.amount.hint": "e.g. 3sb 5st, 2dc, +64",
+  "schematic-tracker.amount.plus": "+1 %s",
+  "schematic-tracker.amount.apply": "Set",
+  "schematic-tracker.amount.editing": "%s: %s / %s",
+  "schematic-tracker.amount.saved": "%s: %s / %s · %s missing",
+  "schematic-tracker.amount.saved_done": "%s: %s / %s · done",
+  "schematic-tracker.cmd.amount_invalid": "Didn't understand “%s”. Examples: 3sb 5st, 2dc, +64, -1st",
+  "schematic-tracker.cmd.item_unknown": "No material “%s” in the list.",
+  "schematic-tracker.cmd.item_ambiguous": "“%s” matches several materials: %s",
+  "schematic-tracker.cmd.hand_empty": "You aren't holding anything."
 }

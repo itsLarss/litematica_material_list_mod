@@ -79,8 +79,20 @@
   "schematic-tracker.list.title": "Materialliste",
   "schematic-tracker.list.settings": "Einstellungen…",
   "schematic-tracker.list.you": "du",
-  "schematic-tracker.list.hint": "Klick auf ein Material: selbst sammeln bzw. freigeben.",
+  "schematic-tracker.list.hint": "Klick: selbst sammeln / freigeben · Rechtsklick: Menge eintragen",
   "schematic-tracker.list.claimed": "Du sammelst jetzt %s.",
   "schematic-tracker.list.released": "%s freigegeben.",
-  "schematic-tracker.list.tooltip": "%s / %s gesammelt · sammelt: %s"
+  "schematic-tracker.list.tooltip": "%s / %s gesammelt · sammelt: %s",
+
+  "schematic-tracker.amount.field": "Menge",
+  "schematic-tracker.amount.hint": "z. B. 3sb 5st, 2dk, +64",
+  "schematic-tracker.amount.plus": "+1 %s",
+  "schematic-tracker.amount.apply": "Setzen",
+  "schematic-tracker.amount.editing": "%s: %s / %s",
+  "schematic-tracker.amount.saved": "%s: %s / %s · noch %s",
+  "schematic-tracker.amount.saved_done": "%s: %s / %s · fertig",
+  "schematic-tracker.cmd.amount_invalid": "„%s“ nicht verstanden. Beispiele: 3sb 5st, 2dk, +64, -1st",
+  "schematic-tracker.cmd.item_unknown": "Kein Material „%s“ in der Liste.",
+  "schematic-tracker.cmd.item_ambiguous": "„%s“ passt zu mehreren Materialien: %s",
+  "schematic-tracker.cmd.hand_empty": "Du hältst nichts in der Hand."
 }

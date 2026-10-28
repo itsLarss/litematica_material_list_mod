@@ -39,6 +39,11 @@ public final class Compat {
 		return key == null ? Items.AIR : BuiltInRegistries.ITEM.getOptional(key).orElse(Items.AIR);
 	}
 
+	/** Minecraft-ID eines Items, z. B. "minecraft:stone". */
+	public static String itemId(Item item) {
+		return BuiltInRegistries.ITEM.getKey(item).toString();
+	}
+
 	/** Tastenbelegung in der Kategorie "Schematic Tracker"; key ist ein GLFW-Tastencode. */
 	public static KeyMapping key(String name, int key) {
 		//? if >=1.21.9 {

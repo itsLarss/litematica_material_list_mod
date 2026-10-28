@@ -6,21 +6,31 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import app.schematictracker.compat.Compat;
+import app.schematictracker.core.ItemMatch;
 import app.schematictracker.core.ListSync;
+import app.schematictracker.core.QuickAmount;
+import app.schematictracker.core.TrackedItem;
+import app.schematictracker.core.TrackedList;
 import app.schematictracker.core.ListView;
 import app.schematictracker.core.TrackerConfig;
 import app.schematictracker.core.TrackerLink;
 import app.schematictracker.screen.TrackerConfigScreen;
 import app.schematictracker.screen.TrackerListScreen;
+import java.util.List;
 import java.util.Locale;
+import java.util.OptionalInt;
+import java.util.stream.Collectors;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 /**
- * /tracker link|unlink|server|status|refresh|hud|filter|sort|list|config
+ * /tracker link|unlink|server|status|refresh|hud|filter|sort|list|config|add|set
  * Unabhängig vom Loader: der Befehlsbaum ist generisch, Rückmeldungen laufen über {@link Feedback}.
  */
 public final class TrackerCommands {
@@ -50,6 +60,24 @@ public final class TrackerCommands {
 
 		private <T> RequiredArgumentBuilder<S, T> argument(String name, ArgumentType<T> type) {
 			return RequiredArgumentBuilder.argument(name, type);
+		}
+
+		/** Vorschläge: "hand" und die IDs der offenen Materialien, danach die fertigen. */
+		private SuggestionProvider<S> items() {
+			return (ctx, builder) -> {
+				String typed = builder.getRemaining().toLowerCase(Locale.ROOT);
+				if ("hand".startsWith(typed)) builder.suggest("hand");
+				TrackedList list = SchematicTrackerClient.sync().list();
+				if (list != null) {
+					List<TrackedItem> sorted = new java.util.ArrayList<>(list.items());
+					sorted.sort(java.util.Comparator.comparing(TrackedItem::complete));
+					for (TrackedItem item : sorted) {
+						String id = ItemMatch.idPath(item);
+						if (!id.isEmpty() && id.startsWith(typed)) builder.suggest(id);
+					}
+				}
+				return builder.buildFuture();
+			};
 		}
 
 		private Feedback out(CommandContext<S> ctx) {
@@ -82,6 +110,14 @@ public final class TrackerCommands {
 							.executes(ctx -> hud(out(ctx), !SchematicTrackerClient.config().hudVisible))
 							.then(literal("on").executes(ctx -> hud(out(ctx), true)))
 							.then(literal("off").executes(ctx -> hud(out(ctx), false))))
+					.then(literal("add").then(argument("item", StringArgumentType.string()).suggests(items())
+							.then(argument("amount", StringArgumentType.greedyString())
+									.executes(ctx -> amount(out(ctx), StringArgumentType.getString(ctx, "item"),
+											StringArgumentType.getString(ctx, "amount"), true)))))
+					.then(literal("set").then(argument("item", StringArgumentType.string()).suggests(items())
+							.then(argument("amount", StringArgumentType.greedyString())
+									.executes(ctx -> amount(out(ctx), StringArgumentType.getString(ctx, "item"),
+											StringArgumentType.getString(ctx, "amount"), false)))))
 					.then(literal("list").executes(ctx -> {
 						SchematicTrackerClient.openLater(new TrackerListScreen(null));
 						return 1;
@@ -185,6 +221,60 @@ public final class TrackerCommands {
 		if (sync.list() != null && !sync.list().canEdit()) {
 			source.ok(Component.translatable("schematic-tracker.cmd.read_only").withStyle(ChatFormatting.GRAY));
 		}
+		return 1;
+	}
+
+	/**
+	 * /tracker add <item> <menge> addiert, /tracker set <item> <menge> setzt (Korrektur). Menge mit Schnelleingabe
+	 * wie auf der Website ("3sb 5st", "2dk", "+64"); "hand" = Item in der Hand.
+	 */
+	private static int amount(Feedback source, String query, String amount, boolean add) {
+		ListSync sync = SchematicTrackerClient.sync();
+		TrackedList list = sync.list();
+		if (!SchematicTrackerClient.config().linked()) {
+			source.error(Component.translatable("schematic-tracker.config.not_linked"));
+			return 0;
+		}
+		if (list == null) {
+			source.error(Component.translatable("schematic-tracker.hud.loading"));
+			return 0;
+		}
+		if (!list.canEdit()) {
+			source.error(Component.translatable("schematic-tracker.cmd.read_only"));
+			return 0;
+		}
+		String search = query;
+		if (query.equalsIgnoreCase("hand")) {
+			Minecraft mc = Minecraft.getInstance();
+			ItemStack held = mc.player == null ? ItemStack.EMPTY : mc.player.getMainHandItem();
+			if (held.isEmpty()) {
+				source.error(Component.translatable("schematic-tracker.cmd.hand_empty"));
+				return 0;
+			}
+			search = Compat.itemId(held.getItem());
+		}
+		ItemMatch.Result found = ItemMatch.find(list.items(), search, Texts::name);
+		if (found instanceof ItemMatch.NotFound) {
+			source.error(Component.translatable("schematic-tracker.cmd.item_unknown", query));
+			return 0;
+		}
+		if (found instanceof ItemMatch.Ambiguous many) {
+			String names = many.candidates().stream().map(ItemMatch::idPath).collect(Collectors.joining(", "));
+			source.error(Component.translatable("schematic-tracker.cmd.item_ambiguous", query, names));
+			return 0;
+		}
+		TrackedItem item = ((ItemMatch.Found) found).item();
+		String text = amount.trim();
+		// add: ohne Vorzeichen wird addiert ("3sb" = +3sb), mit - abgezogen
+		if (add && !text.startsWith("+") && !text.startsWith("-")) text = "+" + text;
+		OptionalInt value = QuickAmount.parse(text, item.have(), item.stackSize());
+		if (value.isEmpty()) {
+			source.error(Component.translatable("schematic-tracker.cmd.amount_invalid", amount));
+			return 0;
+		}
+		sync.setHave(item, value.getAsInt(), SchematicTrackerClient.playerName());
+		TrackedItem now = list.item(item.id());
+		source.ok(Texts.amountSaved(now));
 		return 1;
 	}
 

@@ -29,6 +29,48 @@ class CoreTest {
 	}
 
 	@Test
+	void parsesQuickAmountsLikeTheWebsite() {
+		// Gleiche Fälle wie tests/features.test.ts der Website
+		Object[][] cases = {
+				{"3sb 5st 12", 0, 64, 3 * 1728 + 5 * 64 + 12},
+				{"2dk", 0, 64, 2 * 54 * 64},
+				{"1 kiste", 0, 16, 27 * 16},
+				{"1,5sb", 0, 64, 2592},
+				{"+64", 100, 64, 164},
+				{"-1st", 100, 64, 36},
+				{"-5st", 100, 64, 0},
+				{"12 stk", 0, 64, 12},
+				{"42", 7, 64, 42},
+				{"+1 SB", 0, 16, 27 * 16},
+		};
+		for (Object[] c : cases) {
+			assertEquals((int) c[3], QuickAmount.parse((String) c[0], (int) c[1], (int) c[2]).orElse(-1), (String) c[0]);
+		}
+		assertTrue(QuickAmount.parse("abc", 0, 64).isEmpty());
+		assertTrue(QuickAmount.parse("3xx", 0, 64).isEmpty());
+		assertTrue(QuickAmount.parse("", 0, 64).isEmpty());
+		assertEquals(QuickAmount.MAX, QuickAmount.parse("99999999999", 0, 64).orElse(-1));
+	}
+
+	@Test
+	void findsItemsForCommands() {
+		List<TrackedItem> items = List.of(
+				item("a", "Smooth Quartz Block", 10, 0, false, null, 0),
+				item("b", "Stone", 10, 0, false, null, 1),
+				item("c", "Stone Bricks", 10, 0, false, null, 2));
+		java.util.function.Function<TrackedItem, String> german = i -> i.name().equals("Stone") ? "Stein" : i.name();
+		assertEquals("a", ((ItemMatch.Found) ItemMatch.find(items, "minecraft:smooth_quartz_block", german)).item().id());
+		assertEquals("a", ((ItemMatch.Found) ItemMatch.find(items, "Smooth Quartz", german)).item().id());
+		// Genauer Treffer schlägt Teiltreffer ("stone" steckt auch in "stone_bricks")
+		assertEquals("b", ((ItemMatch.Found) ItemMatch.find(items, "stone", german)).item().id());
+		assertEquals("b", ((ItemMatch.Found) ItemMatch.find(items, "Stein", german)).item().id());
+		assertEquals("c", ((ItemMatch.Found) ItemMatch.find(items, "bricks", german)).item().id());
+		assertInstanceOf(ItemMatch.Ambiguous.class, ItemMatch.find(items, "st", german));
+		assertInstanceOf(ItemMatch.NotFound.class, ItemMatch.find(items, "glass", german));
+		assertInstanceOf(ItemMatch.NotFound.class, ItemMatch.find(items, " ", german));
+	}
+
+	@Test
 	void convertsUnits() {
 		assertEquals(40.75, Amounts.inUnit(70416, 64, Amounts.Unit.SHULKER), 0.01);
 		assertEquals(2.0, Amounts.inUnit(128, 64, Amounts.Unit.STACKS), 1e-9);
