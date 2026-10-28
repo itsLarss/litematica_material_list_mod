@@ -81,8 +81,10 @@ public final class TrackerHud {
 		List<String> names = new ArrayList<>();
 		List<String> notes = new ArrayList<>();
 		List<String> amounts = new ArrayList<>();
+		List<String> claims = new ArrayList<>();
 		int nameWidth = 0;
 		int amountWidth = 0;
+		int claimWidth = 0;
 		for (TrackedItem item : shown) {
 			String name = Texts.name(item);
 			String amount = item.complete()
@@ -92,6 +94,10 @@ public final class TrackerHud {
 			names.add(name);
 			notes.add(note);
 			amounts.add(amount);
+			// Wer sammelt was: nur andere (eigene Claims sind schon am gelben Namen zu erkennen)
+			String claim = config.hudClaims && item.claimedBy() != null && !item.claimedBy(player) ? item.claimedBy() : null;
+			claims.add(claim);
+			if (claim != null) claimWidth = Math.max(claimWidth, font.width(claim));
 			nameWidth = Math.max(nameWidth, font.width(name) + (note == null ? 0 : 6 + font.width(note)));
 			amountWidth = Math.max(amountWidth, font.width(amount));
 		}
@@ -102,7 +108,7 @@ public final class TrackerHud {
 		boolean offline = list != null && sync.status() != ListSync.Status.OK;
 
 		int titleWidth = font.width(title) + (filterHint.isEmpty() ? 0 : 8 + font.width(filterHint)) + (offline ? 10 : 0);
-		int rowsWidth = shown.isEmpty() ? 0 : 16 + 4 + nameWidth + 10 + amountWidth;
+		int rowsWidth = shown.isEmpty() ? 0 : 16 + 4 + nameWidth + 10 + amountWidth + (claimWidth > 0 ? claimWidth + 8 : 0);
 		String session = config.hudSession ? sessionLine(list) : null;
 		int width = PAD * 2 + Math.max(titleWidth, Math.max(rowsWidth,
 				Math.max(emptyText == null ? 0 : font.width(emptyText), more == null ? 0 : font.width(more))));
@@ -153,6 +159,10 @@ public final class TrackerHud {
 			if (notes.get(i) != null) g.text(font, notes.get(i), x + PAD + 20 + font.width(names.get(i)) + 6, textY, GRAY);
 			String amount = amounts.get(i);
 			g.text(font, amount, x + width - PAD - font.width(amount), textY, item.complete() ? GREEN : ORANGE);
+			String claim = claims.get(i);
+			if (claim != null) {
+				g.text(font, claim, x + width - PAD - amountWidth - 8 - font.width(claim), textY, Texts.claimColor(claim));
+			}
 			cy += ROW;
 		}
 		if (emptyText != null) {

@@ -50,6 +50,10 @@ public final class TrackerConfig {
 	public boolean hudSession = true;
 	/** Notizen (kurz) im HUD */
 	public boolean hudNotes = true;
+	/** Wer sammelt was (Claims anderer) im HUD */
+	public boolean hudClaims = true;
+	/** Namen farbig statt grau */
+	public boolean claimColors = true;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

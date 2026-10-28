@@ -40,6 +40,11 @@ Litematica und funktioniert auf jedem Server.
 - **Notizen (nur lesen):** `note` und `items[].note` aus API v1 (`TrackerApi.optStr`: fehlendes Feld = null, so
   bleibt es bei älteren Websites und Nur-Ansehen-Links still aus). HUD kurz (abschaltbar, `hudNotes`), Liste `K`
   voll im Notizbereich unten (Material unter der Maus, sonst Listen-Notiz). Schreiben geht nur auf der Website.
+- **Wer sammelt was im HUD:** Claims anderer neben der Menge (`hudClaims`), Farbe je Name aus fester Palette
+  (`Texts.claimColor`, `claimColors`). Eigene Claims weiter nur als gelber Name.
+- **Einstellungen auf zwei Seiten** (`TrackerConfigScreen.morePage`): Seite 1 Verbindung + Aussehen, Seite 2
+  Meldungen, Farm-Session, Notizen, Claims. Neue Optionen auf Seite 2; beide Seiten müssen bei GUI-Größe 4
+  (270 px hoch) passen.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
   eigener Name für „Meine“, Fertig-Meldung/-Ton/Konfetti.
