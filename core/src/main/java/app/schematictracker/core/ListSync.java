@@ -57,6 +57,16 @@ public final class ListSync {
 	private long saveAt;
 	private long pollStartedAt;
 	private String actor;
+	private AmountListener amountListener = (item, before, after) -> {};
+
+	/** Wird bei jeder eigenen Mengenänderung aufgerufen (z. B. für die Farm-Session). */
+	public interface AmountListener {
+		void changed(TrackedItem item, int before, int after);
+	}
+
+	public void onOwnAmount(AmountListener listener) {
+		amountListener = listener;
+	}
 
 	private static final class LocalAmount {
 		TrackerApi.AmountChange change;
@@ -178,6 +188,7 @@ public final class ListSync {
 		local.change = change;
 		local.savedAt = 0;
 		list.replace(withAmount(current, value, farmed));
+		amountListener.changed(current, current.have(), value);
 		actor = player;
 		long now = System.currentTimeMillis();
 		saveAt = now + SAVE_DELAY_MS;

@@ -106,6 +106,39 @@ class CoreTest {
 	}
 
 	@Test
+	void estimatesFarmRateAndRemainingTime() {
+		FarmSession session = new FarmSession();
+		assertFalse(session.running());
+		long t0 = 1_000_000;
+		// Erster eigener Eintrag startet die Session
+		session.record("stone", 0, 640, t0);
+		assertTrue(session.running());
+		assertEquals("stone", session.currentId());
+		assertEquals(-1, session.perHour("stone", t0 + 30_000), 1e-9); // unter einer Minute keine Schätzung
+
+		session.record("stone", 640, 1280, t0 + 30 * 60_000);
+		assertEquals(2560, session.perHour("stone", t0 + 30 * 60_000), 1e-6); // 1280 in 30 min
+		session.record("stone", 1280, 1000, t0 + 30 * 60_000); // Korrektur nach unten zählt nicht
+		assertEquals(1280, session.gained("stone"));
+
+		TrackedItem stone = new TrackedItem("stone", "Stone", "minecraft:stone", 3840, 1280, 64, false, null, 0);
+		assertEquals(60 * 60_000, session.remainingMs(stone, t0 + 30 * 60_000)); // 2560 fehlen bei 2560/h
+		assertEquals(0, session.remainingMs(new TrackedItem("x", "X", null, 5, 5, 64, false, null, 0), t0));
+		assertEquals(-1, session.remainingMs(new TrackedItem("glass", "Glass", null, 5, 0, 64, false, null, 0), t0));
+
+		session.record("glass", 0, 64, t0 + 31 * 60_000);
+		assertEquals("glass", session.currentId());
+		session.start(t0 + 40 * 60_000); // Reset
+		assertEquals(0, session.gained("stone"));
+		assertNull(session.currentId());
+
+		assertEquals("< 1 min", FarmSession.formatDuration(20_000));
+		assertEquals("45 min", FarmSession.formatDuration(45 * 60_000));
+		assertEquals("2 h 10 min", FarmSession.formatDuration(130 * 60_000));
+		assertEquals("3 h", FarmSession.formatDuration(180 * 60_000));
+	}
+
+	@Test
 	void convertsUnits() {
 		assertEquals(40.75, Amounts.inUnit(70416, 64, Amounts.Unit.SHULKER), 0.01);
 		assertEquals(2.0, Amounts.inUnit(128, 64, Amounts.Unit.STACKS), 1e-9);

@@ -79,3 +79,14 @@ Tabelle oben nachtragen).
 20. Letztes Material fertig → Toast „Liste fertig!“, Ton, Konfetti (auch bei ausgeblendetem HUD und in der Liste K).
 21. Fertig-Meldung / Fertig-Ton / Konfetti einzeln ausschalten → jeweils nur das fällt weg.
 22. Beim Verbinden oder Neustart mit schon fertigen Materialien: keine Meldung.
+
+### Neu: Farm-Session (Feature 3)
+
+23. Erster eigener Eintrag (Liste oder `/tracker add`) → im HUD unten eine türkise Zeile
+    „⏱ Name: +N (Tempo ab 1 min)“.
+24. Nach über einer Minute und weiteren Einträgen: „⏱ Name: X/h · noch ~Y“ – grob plausibel?
+25. Anderes Material eintragen → Zeile wechselt auf dieses Material. Material voll → „⏱ Name: fertig“.
+26. `/tracker session` zeigt Dauer, Zuwachs, Tempo, Restzeit; `/tracker session start` setzt zurück (Toast),
+    `/tracker session stop` blendet die Zeile aus.
+27. Steuerung → Tastenbelegung: „Farm-Session starten/neu starten“ (ohne Standardtaste) belegen und drücken → Toast.
+28. Einstellungen: „Farm-Session im HUD“ aus → Zeile weg; „Farm-Session neu starten“-Knopf → Toast.

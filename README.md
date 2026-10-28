@@ -15,6 +15,9 @@ in the style of the Litematica material list, and keeps it in sync with the webs
   your hand. Changes are saved after a short pause and show up on the website like any other edit.
 - **Done notifications:** a toast and a sound when a material is complete (yours or a friend's), and confetti when
   the whole list is done. Each can be turned off in the settings; *Preview* shows how it looks.
+- **Farm session:** counts what you enter in the mod and shows items per hour and the estimated time left for the
+  material you're farming right now (an extra line in the HUD). Starts with your first entry; restart it with
+  `/tracker session start`, a key (unbound by default, see Controls) or the settings.
 - **Settings** via Mod Menu, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
   unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
   done message, sound and confetti.
@@ -62,6 +65,7 @@ Instead of a code you can also paste a share link: `/tracker link https://<websi
 | `/tracker sort <missing\|name\|list>`| Order                                     |
 | `/tracker add <item> <amount>`       | Add to the amount (`/tracker add stone 3sb`, `/tracker add hand 64`) |
 | `/tracker set <item> <amount>`       | Correct the amount (`/tracker set glass 2dc 5st`) |
+| `/tracker session [start\|stop]`     | Farm session: rate and time left, restart or stop |
 | `/tracker list`                      | Full list (default key `K`)               |
 | `/tracker config`                    | Settings                                  |
 

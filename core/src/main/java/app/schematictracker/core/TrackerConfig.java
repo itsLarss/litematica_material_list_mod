@@ -46,6 +46,8 @@ public final class TrackerConfig {
 	public boolean notifySound = true;
 	/** Konfetti, wenn die ganze Liste fertig ist */
 	public boolean notifyConfetti = true;
+	/** Zeile "Items pro Stunde / Restzeit" der Farm-Session im HUD */
+	public boolean hudSession = true;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

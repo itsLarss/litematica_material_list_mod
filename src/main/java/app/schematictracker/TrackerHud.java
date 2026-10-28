@@ -2,6 +2,7 @@ package app.schematictracker;
 
 import app.schematictracker.compat.Compat;
 import app.schematictracker.compat.Gfx;
+import app.schematictracker.core.FarmSession;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.ListView;
 import app.schematictracker.core.TrackedItem;
@@ -29,6 +30,7 @@ public final class TrackerHud {
 	static final int ORANGE = 0xFFFFAA00;
 	static final int GREEN = 0xFF55FF55;
 	static final int RED = 0xFFFF5555;
+	static final int CYAN = 0xFF55FFFF;
 
 	private TrackerHud() {}
 
@@ -92,9 +94,12 @@ public final class TrackerHud {
 
 		int titleWidth = font.width(title) + (filterHint.isEmpty() ? 0 : 8 + font.width(filterHint)) + (offline ? 10 : 0);
 		int rowsWidth = shown.isEmpty() ? 0 : 16 + 4 + nameWidth + 10 + amountWidth;
+		String session = config.hudSession ? sessionLine(list) : null;
 		int width = PAD * 2 + Math.max(titleWidth, Math.max(rowsWidth,
 				Math.max(emptyText == null ? 0 : font.width(emptyText), more == null ? 0 : font.width(more))));
-		int height = PAD + TITLE + shown.size() * ROW + (emptyText != null ? 11 : 0) + (more != null ? 11 : 0) + PAD - 2;
+		if (session != null) width = Math.max(width, PAD * 2 + font.width(session));
+		int height = PAD + TITLE + shown.size() * ROW + (emptyText != null ? 11 : 0) + (more != null ? 11 : 0)
+				+ (session != null ? 11 : 0) + PAD - 2;
 
 		float scale = config.scale / 100f;
 		int screenW = Math.round(g.width() / scale);
@@ -139,7 +144,28 @@ public final class TrackerHud {
 			g.text(font, emptyText, x + PAD, cy, GRAY);
 			cy += 11;
 		}
-		if (more != null) g.text(font, more, x + PAD, cy, GRAY);
+		if (more != null) {
+			g.text(font, more, x + PAD, cy, GRAY);
+			cy += 11;
+		}
+		if (session != null) g.text(font, session, x + PAD, cy, CYAN);
 		g.popScale();
+	}
+
+	/** "Stone: 2560/h · noch ~1 h" für das Material, an dem man gerade farmt; null = keine Session */
+	private static String sessionLine(TrackedList list) {
+		FarmSession session = SchematicTrackerClient.session();
+		if (list == null || !session.running() || session.currentId() == null) return null;
+		TrackedItem item = list.item(session.currentId());
+		if (item == null) return null;
+		long now = System.currentTimeMillis();
+		String name = Texts.name(item);
+		if (item.complete()) return Component.translatable("schematic-tracker.hud.session_done", name).getString();
+		double rate = session.perHour(item.id(), now);
+		if (rate < 0) {
+			return Component.translatable("schematic-tracker.hud.session_wait", name, session.gained(item.id())).getString();
+		}
+		return Component.translatable("schematic-tracker.hud.session", name, Math.round(rate),
+				FarmSession.formatDuration(session.remainingMs(item, now))).getString();
 	}
 }

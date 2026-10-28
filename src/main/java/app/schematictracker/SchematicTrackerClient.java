@@ -1,6 +1,7 @@
 package app.schematictracker;
 
 import app.schematictracker.compat.Compat;
+import app.schematictracker.core.FarmSession;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.TrackerApi;
 import app.schematictracker.core.TrackerConfig;
@@ -11,6 +12,7 @@ import java.util.List;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,16 +26,20 @@ public final class SchematicTrackerClient {
 
 	private static final int GLFW_KEY_J = 74;
 	private static final int GLFW_KEY_K = 75;
+	/** Ohne Standardtaste (in den Steuerungs-Einstellungen belegbar) */
+	private static final int GLFW_KEY_UNKNOWN = -1;
 
 	private static Path configFile;
 	private static TrackerConfig config;
 	private static TrackerApi api;
 	private static ListSync sync;
+	private static final FarmSession SESSION = new FarmSession();
 	/** Bildschirm, der nach dem Schließen des Chats geöffnet werden soll (Befehle laufen im Chat). */
 	private static Screen pendingScreen;
 
 	private static KeyMapping toggleHud;
 	private static KeyMapping openList;
+	private static KeyMapping restartSession;
 
 	private SchematicTrackerClient() {}
 
@@ -45,17 +51,22 @@ public final class SchematicTrackerClient {
 		sync = new ListSync(api, () -> config, task -> Minecraft.getInstance().execute(task));
 		toggleHud = Compat.key("key.schematic-tracker.toggle_hud", GLFW_KEY_J);
 		openList = Compat.key("key.schematic-tracker.open_list", GLFW_KEY_K);
+		restartSession = Compat.key("key.schematic-tracker.restart_session", GLFW_KEY_UNKNOWN);
+		sync.onOwnAmount((item, before, after) -> SESSION.record(item.id(), before, after, System.currentTimeMillis()));
 	}
 
 	/** Tasten, die der Loader registrieren muss. */
 	public static List<KeyMapping> keys() {
-		return List.of(toggleHud, openList);
+		return List.of(toggleHud, openList, restartSession);
 	}
 
 	public static void tick(Minecraft mc) {
 		while (toggleHud.consumeClick()) {
 			config.hudVisible = !config.hudVisible;
 			saveConfig();
+		}
+		while (restartSession.consumeClick()) {
+			restartSession(mc);
 		}
 		while (openList.consumeClick()) {
 			if (Compat.screen(mc) == null) Compat.setScreen(mc, new TrackerListScreen(null));
@@ -81,6 +92,17 @@ public final class SchematicTrackerClient {
 
 	public static ListSync sync() {
 		return sync;
+	}
+
+	public static FarmSession session() {
+		return SESSION;
+	}
+
+	/** Farm-Session (neu) starten; Rückmeldung als Toast */
+	public static void restartSession(Minecraft mc) {
+		SESSION.start(System.currentTimeMillis());
+		Compat.toast(mc, Component.translatable("schematic-tracker.session.started"),
+				Component.translatable("schematic-tracker.session.started_hint"));
 	}
 
 	/** Öffnet einen Bildschirm, sobald der Chat zu ist. */
