@@ -26,7 +26,7 @@ public abstract class CompatScreen extends Screen {
 		return false;
 	}
 
-	/** Taste gedrückt (GLFW-Code), bevor der Bildschirm sie verarbeitet; true = verbraucht. */
+	/** Taste gedrückt (Code wie InputConstants.KEY_…, ab 26.3 SDL statt GLFW), bevor der Bildschirm sie verarbeitet; true = verbraucht. */
 	protected boolean key(int keyCode) {
 		return false;
 	}

@@ -1,6 +1,7 @@
 package app.schematictracker;
 
 import app.schematictracker.compat.Compat;
+import com.mojang.blaze3d.platform.InputConstants;
 import app.schematictracker.core.FarmSession;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.TrackerApi;
@@ -24,10 +25,6 @@ public final class SchematicTrackerClient {
 	public static final String MOD_ID = "schematic-tracker";
 	public static final Logger LOG = LoggerFactory.getLogger(MOD_ID);
 
-	private static final int GLFW_KEY_J = 74;
-	private static final int GLFW_KEY_K = 75;
-	/** Ohne Standardtaste (in den Steuerungs-Einstellungen belegbar) */
-	private static final int GLFW_KEY_UNKNOWN = -1;
 
 	private static Path configFile;
 	private static TrackerConfig config;
@@ -49,9 +46,10 @@ public final class SchematicTrackerClient {
 		api = new TrackerApi("SchematicTrackerMod/" + version);
 		// Minecraft erst beim Aufruf holen: NeoForge erzeugt die Mod, bevor es Minecraft gibt
 		sync = new ListSync(api, () -> config, task -> Minecraft.getInstance().execute(task));
-		toggleHud = Compat.key("key.schematic-tracker.toggle_hud", GLFW_KEY_J);
-		openList = Compat.key("key.schematic-tracker.open_list", GLFW_KEY_K);
-		restartSession = Compat.key("key.schematic-tracker.restart_session", GLFW_KEY_UNKNOWN);
+		toggleHud = Compat.key("key.schematic-tracker.toggle_hud", InputConstants.KEY_J);
+		openList = Compat.key("key.schematic-tracker.open_list", InputConstants.KEY_K);
+		// Ohne Standardtaste. Tastencodes immer über InputConstants: ab 26.3 sind es SDL- statt GLFW-Codes.
+		restartSession = Compat.key("key.schematic-tracker.restart_session", InputConstants.UNKNOWN.getValue());
 		sync.onOwnAmount((item, before, after) -> SESSION.record(item.id(), before, after, System.currentTimeMillis()));
 	}
 

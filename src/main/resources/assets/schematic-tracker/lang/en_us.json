@@ -107,7 +107,7 @@
 
   "key.schematic-tracker.restart_session": "Start/restart farm session",
   "schematic-tracker.hud.session": "⏱ %s: %s/h · ~%s left",
-  "schematic-tracker.hud.session_wait": "⏱ %s: +%s (rate after 1 min)",
+  "schematic-tracker.hud.session_wait": "⏱ %s: +%s · rate after your next entry",
   "schematic-tracker.hud.session_done": "⏱ %s: done",
   "schematic-tracker.session.started": "Farm session started",
   "schematic-tracker.session.started_hint": "Your entries count from now on.",

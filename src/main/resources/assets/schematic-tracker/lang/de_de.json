@@ -107,7 +107,7 @@
 
   "key.schematic-tracker.restart_session": "Farm-Session starten/neu starten",
   "schematic-tracker.hud.session": "⏱ %s: %s/h · noch ~%s",
-  "schematic-tracker.hud.session_wait": "⏱ %s: +%s (Tempo ab 1 min)",
+  "schematic-tracker.hud.session_wait": "⏱ %s: +%s · Tempo ab dem nächsten Eintrag",
   "schematic-tracker.hud.session_done": "⏱ %s: fertig",
   "schematic-tracker.session.started": "Farm-Session gestartet",
   "schematic-tracker.session.started_hint": "Ab jetzt zählen deine Einträge.",

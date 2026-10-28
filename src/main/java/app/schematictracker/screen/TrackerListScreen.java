@@ -12,6 +12,7 @@ import app.schematictracker.core.QuickAmount;
 import app.schematictracker.core.TrackedItem;
 import app.schematictracker.core.TrackedList;
 import app.schematictracker.core.TrackerConfig;
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.List;
 import java.util.Locale;
 import java.util.OptionalInt;
@@ -34,9 +35,6 @@ public final class TrackerListScreen extends CompatScreen {
 	/** Notizbereich unter der Liste: Überschrift + 3 Zeilen */
 	private static final int NOTE_LINES = 3;
 	private static final int NOTES = 12 + NOTE_LINES * 10 + 4;
-	private static final int GLFW_KEY_ENTER = 257;
-	private static final int GLFW_KEY_KP_ENTER = 335;
-	private static final int GLFW_KEY_ESCAPE = 256;
 
 	private final Screen parent;
 	private int scroll;
@@ -346,11 +344,11 @@ public final class TrackerListScreen extends CompatScreen {
 	@Override
 	protected boolean key(int keyCode) {
 		if (editingId == null) return false;
-		if (keyCode == GLFW_KEY_ENTER || keyCode == GLFW_KEY_KP_ENTER) {
+		if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
 			applyField();
 			return true;
 		}
-		if (keyCode == GLFW_KEY_ESCAPE) {
+		if (keyCode == InputConstants.KEY_ESCAPE) {
 			closeEditor();
 			return true;
 		}

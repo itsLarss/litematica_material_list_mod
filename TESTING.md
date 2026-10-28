@@ -43,6 +43,15 @@ Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
   (`SchematicTrackerClient.init`): NeoForge erzeugt die Mod, bevor es `Minecraft` gibt. Behoben, Minecraft wird erst
   beim Aufruf geholt. Gemeldet für 26.1–26.3, 1.21.5, 1.21.8, 1.21.10, 1.21.11; betraf alle NeoForge-Jars.
 
+- 28.10.: **26.3 (Fabric und NeoForge) stürzte beim Laden einer Welt ab** (`InputConstants.isKeyDown`,
+  IndexOutOfBounds). Ursache: 26.3 nutzt SDL statt GLFW, die Mod hatte feste GLFW-Tastencodes (J = 74 usw.) und -1
+  für „keine Taste“. Dadurch lagen in 26.3 auch J/K auf falschen Tasten (Bild auf/ab, Pos1) und Enter/Esc im
+  Mengenfeld reagierten nicht. Behoben: nur noch `InputConstants.KEY_…`. In Test-Ordnern mit alter `options.txt`
+  die Zeilen `key_key.schematic-tracker.*` löschen (für run/26.3-* erledigt).
+- 28.10.: **Farm-Session zeigte riesige, laufend fallende Werte** (z. B. 133 916/h). Ursache: Der erste Eintrag (oft
+  ein Nachtrag von schon Gesammeltem) zählte voll ins Tempo, gemessen bis „jetzt“. Behoben: erster Eintrag ist nur
+  der Ausgangspunkt, Tempo vom ersten bis zum letzten Eintrag (ruhig zwischen den Einträgen).
+
 ## Checkliste im Spiel
 
 1. Spiel startet ohne Fehler, Mod erscheint in der Mod-Liste (Fabric: Mod Menu, NeoForge: „Mods“).
@@ -83,8 +92,9 @@ Tabelle oben nachtragen).
 ### Neu: Farm-Session (Feature 3)
 
 23. Erster eigener Eintrag (Liste oder `/tracker add`) → im HUD unten eine türkise Zeile
-    „⏱ Name: +N (Tempo ab 1 min)“.
-24. Nach über einer Minute und weiteren Einträgen: „⏱ Name: X/h · noch ~Y“ – grob plausibel?
+    „⏱ Name: +N · Tempo ab dem nächsten Eintrag“ (der erste Eintrag ist nur der Ausgangspunkt).
+24. Weitere Einträge, der letzte mindestens 1 min nach dem ersten: „⏱ Name: X/h · noch ~Y“. Beispiel: alle 10 min
+    `+1 SB` (64er-Item) → ca. 10 368/h. Zwischen zwei Einträgen bleibt die Zahl gleich.
 25. Anderes Material eintragen → Zeile wechselt auf dieses Material. Material voll → „⏱ Name: fertig“.
 26. `/tracker session` zeigt Dauer, Zuwachs, Tempo, Restzeit; `/tracker session start` setzt zurück (Toast),
     `/tracker session stop` blendet die Zeile aus.
