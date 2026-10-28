@@ -41,7 +41,8 @@ public final class SchematicTrackerClient {
 		configFile = configDir.resolve(MOD_ID + ".json");
 		config = TrackerConfig.load(configFile);
 		api = new TrackerApi("SchematicTrackerMod/" + version);
-		sync = new ListSync(api, () -> config, Minecraft.getInstance()::execute);
+		// Minecraft erst beim Aufruf holen: NeoForge erzeugt die Mod, bevor es Minecraft gibt
+		sync = new ListSync(api, () -> config, task -> Minecraft.getInstance().execute(task));
 		toggleHud = Compat.key("key.schematic-tracker.toggle_hud", GLFW_KEY_J);
 		openList = Compat.key("key.schematic-tracker.open_list", GLFW_KEY_K);
 	}

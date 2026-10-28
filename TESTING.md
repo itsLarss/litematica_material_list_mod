@@ -17,7 +17,7 @@ Stand der Version `0.2.0` (Umbau auf eine Codebasis, noch ohne neue Funktionen).
 | 1.21.4-fabric | ja (lokal) | nein              |           |
 | 1.21.4-neoforge | ja (lokal) | nein              |           |
 | 1.21.5-fabric | ja (lokal) | nein              |           |
-| 1.21.5-neoforge | ja (lokal) | nein              |           |
+| 1.21.5-neoforge | ja (lokal) | nein              | startet bis zum Titelbildschirm ohne Ladefehler (28.10.) |
 | 1.21.6-fabric | ja (lokal) | nein              |           |
 | 1.21.7-fabric | ja (lokal) | nein              |           |
 | 1.21.8-fabric | ja (lokal) | nein              |           |
@@ -32,10 +32,16 @@ Stand der Version `0.2.0` (Umbau auf eine Codebasis, noch ohne neue Funktionen).
 | 26.2-fabric | ja (lokal) | nein              | auch vor dem Umbau nur gebaut |
 | 26.2-neoforge | ja (lokal) | nein              |           |
 | 26.3-fabric | ja (lokal) | nein              |           |
-| 26.3-neoforge | ja (lokal) | nein              |           |
+| 26.3-neoforge | ja (lokal) | nein              | startet bis zum Titelbildschirm ohne Ladefehler (28.10.) |
 
 Vor dem Umbau (Fabric, 0.0.x/0.1.x) wurden laut bisheriger Doku alle Versionen außer 26.2 im Spiel geprüft. Nach dem
 Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
+
+## Bekannte, behobene Fehler
+
+- 28.10.: Auf **allen NeoForge-Versionen** brach das Laden mit `NullPointerException` ab
+  (`SchematicTrackerClient.init`): NeoForge erzeugt die Mod, bevor es `Minecraft` gibt. Behoben, Minecraft wird erst
+  beim Aufruf geholt. Gemeldet für 26.1–26.3, 1.21.5, 1.21.8, 1.21.10, 1.21.11; betraf alle NeoForge-Jars.
 
 ## Checkliste im Spiel
 
