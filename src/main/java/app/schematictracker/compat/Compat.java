@@ -59,7 +59,7 @@ public final class Compat {
 		return BuiltInRegistries.ITEM.getKey(item).toString();
 	}
 
-	/** Tastenbelegung in der Kategorie "Schematic Tracker"; key ist ein GLFW-Tastencode. */
+	/** Tastenbelegung in der Kategorie "Schematic Tracker"; key immer als InputConstants.KEY_… (ab 26.3 SDL-Codes). */
 	public static KeyMapping key(String name, int key) {
 		//? if >=1.21.9 {
 		return new KeyMapping(name, key, CATEGORY);

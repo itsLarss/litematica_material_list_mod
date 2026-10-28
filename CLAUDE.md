@@ -33,8 +33,9 @@ Litematica und funktioniert auf jedem Server.
   Animation über `Gfx`, keine Partikel). Erkennung in `core/Completions` (beim ersten Laden still), Anzeige in
   `Notifications`. Einzeln abschaltbar (`notifyToast`, `notifySound`, `notifyConfetti`), „Vorschau“ in den
   Einstellungen. Toast-API je Version in `Compat.toast` (bis 1.21.1 `getToasts()`, ab 26.2 `gui.toastManager()`).
-- **Farm-Session:** `core/FarmSession` zählt eigene Zuwächse (über `ListSync.onOwnAmount`), Tempo pro Stunde ab
-  1 Minute Laufzeit, Restzeit = fehlend / Tempo für das zuletzt erhöhte Material. Start beim ersten Eintrag,
+- **Farm-Session:** `core/FarmSession` zählt eigene Zuwächse (über `ListSync.onOwnAmount`). Tempo pro Material vom
+  ersten bis zum letzten Eintrag (mind. 1 min); startet die Session von selbst, ist der erste Eintrag nur
+  Ausgangspunkt. Restzeit = fehlend / Tempo für das zuletzt erhöhte Material. Start beim ersten Eintrag,
   Neustart per `/tracker session start`, Taste (ohne Standardbelegung) oder Einstellungen; HUD-Zeile abschaltbar
   (`hudSession`). Nur im Speicher, nicht in der Config.
 - **Notizen (nur lesen):** `note` und `items[].note` aus API v1 (`TrackerApi.optStr`: fehlendes Feld = null, so
@@ -199,6 +200,10 @@ Loader-Unterschiede: `//? if fabric { … }` bzw. `neoforge`; außerdem landet `
 | 1.21.11    | `Identifier` statt `ResourceLocation`, neuer CycleButton-Builder               | Ersetzung, `Compat`              |
 | 26.1       | unverschleiert, Java 25, `GuiGraphicsExtractor`, `KeyMappingHelper`            | `Gfx`, `CompatScreen`, `fabric/` |
 | 26.2       | aktueller Bildschirm über `Minecraft.gui`                                      | `Compat`                         |
+
+**Tastencodes nie als feste Zahl** (z. B. 74 für J): Ab 26.3 nutzt Minecraft SDL statt GLFW, die Codes sind
+andere (J = 13, Enter = 40, „keine Taste“ = 0 statt -1). Immer `InputConstants.KEY_…` bzw.
+`InputConstants.UNKNOWN.getValue()` verwenden – das wird pro Version richtig einkompiliert.
 
 Auf NeoForge ab 1.21.9 die Tasten-Kategorie **nicht** über `KeyMapping.Category.register` anlegen (wirft sonst
 „already registered“), sondern über `RegisterKeyMappingsEvent#registerCategory` (siehe `Compat`).

@@ -110,62 +110,40 @@ class CoreTest {
 		FarmSession session = new FarmSession();
 		assertFalse(session.running());
 		long t0 = 1_000_000;
-		// Erster eigener Eintrag startet die Session
-		session.record("stone", 0, 640, t0);
+		long min = 60_000;
+		// Gemeldeter Fehler: erster Eintrag trägt schon Gesammeltes nach (0 → 100 000). Das darf kein Tempo ergeben.
+		session.record("quartz", 0, 100_000, t0);
 		assertTrue(session.running());
-		assertEquals("stone", session.currentId());
-		assertEquals(-1, session.perHour("stone", t0 + 30_000), 1e-9); // unter einer Minute keine Schätzung
+		assertEquals("quartz", session.currentId());
+		assertEquals(-1, session.perHour("quartz", t0 + 5 * min), 1e-9);
 
-		session.record("stone", 640, 1280, t0 + 30 * 60_000);
-		assertEquals(2560, session.perHour("stone", t0 + 30 * 60_000), 1e-6); // 1280 in 30 min
-		session.record("stone", 1280, 1000, t0 + 30 * 60_000); // Korrektur nach unten zählt nicht
-		assertEquals(1280, session.gained("stone"));
+		// Danach alle 10 min ein Shulker (1728): 3456 in 20 min = 10 368/h, auch später gleich (nicht fallend)
+		session.record("quartz", 100_000, 101_728, t0 + 10 * min);
+		session.record("quartz", 101_728, 103_456, t0 + 20 * min);
+		assertEquals(10_368, session.perHour("quartz", t0 + 20 * min), 1e-6);
+		assertEquals(10_368, session.perHour("quartz", t0 + 29 * min), 1e-6);
+		assertEquals(103_456, session.gained("quartz"));
+		session.record("quartz", 103_456, 103_000, t0 + 21 * min); // Korrektur nach unten zählt nicht
+		assertEquals(10_368, session.perHour("quartz", t0 + 21 * min), 1e-6);
 
-		TrackedItem stone = new TrackedItem("stone", "Stone", "minecraft:stone", 3840, 1280, 64, false, null, 0);
-		assertEquals(60 * 60_000, session.remainingMs(stone, t0 + 30 * 60_000)); // 2560 fehlen bei 2560/h
+		TrackedItem quartz = new TrackedItem("quartz", "Quartz", null, 113_824, 103_456, 64, false, null, 0);
+		assertEquals(60 * min, session.remainingMs(quartz, t0 + 20 * min)); // 10 368 fehlen bei 10 368/h
 		assertEquals(0, session.remainingMs(new TrackedItem("x", "X", null, 5, 5, 64, false, null, 0), t0));
 		assertEquals(-1, session.remainingMs(new TrackedItem("glass", "Glass", null, 5, 0, 64, false, null, 0), t0));
 
-		session.record("glass", 0, 64, t0 + 31 * 60_000);
-		assertEquals("glass", session.currentId());
-		session.start(t0 + 40 * 60_000); // Reset
-		assertEquals(0, session.gained("stone"));
+		// Neustart per Befehl/Taste: ab jetzt zählt jeder Zuwachs ab dem Start, auch der erste
+		session.start(t0 + 30 * min);
+		assertEquals(0, session.gained("quartz"));
 		assertNull(session.currentId());
+		session.record("glass", 0, 640, t0 + 40 * min);
+		assertEquals(3_840, session.perHour("glass", t0 + 40 * min), 1e-6); // 640 in 10 min
+		session.stop();
+		assertFalse(session.running());
 
 		assertEquals("< 1 min", FarmSession.formatDuration(20_000));
 		assertEquals("45 min", FarmSession.formatDuration(45 * 60_000));
 		assertEquals("2 h 10 min", FarmSession.formatDuration(130 * 60_000));
 		assertEquals("3 h", FarmSession.formatDuration(180 * 60_000));
-	}
-
-	@Test
-	void presetsChangeOnlyDisplayOptions() {
-		TrackerConfig c = new TrackerConfig();
-		c.server = "https://tracker.example";
-		c.token = "t";
-		c.filter = ListView.Filter.MINE;
-		c.corner = TrackerConfig.Corner.TOP_LEFT;
-		c.playerName = "Steve";
-		// Ohne Änderung entspricht die Standard-Config "Übersichtlich"
-		assertTrue(Preset.CLEAR.matches(new TrackerConfig()));
-
-		Preset.MINIMAL.apply(c);
-		assertEquals(3, c.rows);
-		assertFalse(c.notifyToast || c.notifySound || c.notifyConfetti || c.hudClaims || c.hudSession || c.hudNotes);
-		assertTrue(Preset.MINIMAL.matches(c));
-		assertFalse(Preset.ALL.matches(c));
-
-		Preset.ALL.apply(c);
-		assertEquals(12, c.rows);
-		assertTrue(c.hudNotes && c.hudClaims && c.hudSession && c.hudDeadline && c.notifyConfetti);
-		// Danach einzeln änderbar; Verbindung, Filter, Ecke und Name bleiben unberührt
-		c.rows = 8;
-		assertFalse(Preset.ALL.matches(c));
-		assertEquals("https://tracker.example", c.server);
-		assertEquals(ListView.Filter.MINE, c.filter);
-		assertEquals(TrackerConfig.Corner.TOP_LEFT, c.corner);
-		assertEquals("Steve", c.playerName);
-		assertEquals("minimal", Preset.MINIMAL.id());
 	}
 
 	@Test

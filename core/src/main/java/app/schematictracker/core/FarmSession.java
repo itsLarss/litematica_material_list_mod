@@ -6,37 +6,73 @@ import java.util.Map;
 /**
  * Farm-Session: zählt, was man selbst in der Mod einträgt (Liste, /tracker add|set), und rechnet daraus Items pro
  * Stunde und die geschätzte Restzeit für das Material, an dem man gerade farmt (das zuletzt erhöhte).
- * Start und Reset per Befehl oder Taste; ohne Start beginnt die Session beim ersten eigenen Eintrag.
+ *
+ * Gerechnet wird pro Material vom ersten bis zum letzten Eintrag: Startet die Session von selbst (erster Eintrag),
+ * ist dieser erste Eintrag nur der Ausgangspunkt und zählt nicht – sonst würde z. B. das Nachtragen von 100 000
+ * schon Gesammelten ein riesiges Tempo ergeben. Nach einem Start per Befehl/Taste zählt jeder Zuwachs ab diesem
+ * Moment. Zwischen zwei Einträgen bleibt die Anzeige ruhig.
  */
 public final class FarmSession {
-	/** Unter einer Minute ist die Rate zu wackelig für eine Schätzung */
+	/** Kürzere Zeitspanne zwischen erstem und letztem Eintrag ergibt keine Schätzung */
 	static final long MIN_ELAPSED_MS = 60_000;
 
+	private static final class Track {
+		final long firstAt;
+		long lastAt;
+		/** Zuwachs, der ins Tempo eingeht (ohne den Ausgangs-Eintrag) */
+		long counted;
+		/** Alles, was in der Session dazukam (für die Anzeige) */
+		long total;
+
+		Track(long firstAt) {
+			this.firstAt = firstAt;
+			this.lastAt = firstAt;
+		}
+	}
+
 	private long startedAt;
-	private final Map<String, Long> gained = new HashMap<>();
+	/** true = per Befehl/Taste gestartet: dann zählt auch der erste Eintrag ab startedAt */
+	private boolean explicit;
+	private final Map<String, Track> tracks = new HashMap<>();
 	private String currentId;
 
 	public boolean running() {
 		return startedAt != 0;
 	}
 
+	/** Start bzw. Neustart per Befehl, Taste oder Einstellungen */
 	public void start(long now) {
 		startedAt = now;
-		gained.clear();
+		explicit = true;
+		tracks.clear();
 		currentId = null;
 	}
 
 	public void stop() {
 		startedAt = 0;
-		gained.clear();
+		explicit = false;
+		tracks.clear();
 		currentId = null;
 	}
 
 	/** Eigene Mengenänderung; nur Zuwächse zählen (Korrekturen nach unten verringern die Rate nicht ins Minus). */
 	public void record(String itemId, int before, int after, long now) {
 		if (after <= before) return;
-		if (!running()) start(now);
-		gained.merge(itemId, (long) (after - before), Long::sum);
+		if (!running()) {
+			startedAt = now;
+			explicit = false;
+		}
+		long delta = after - before;
+		Track t = tracks.get(itemId);
+		if (t == null) {
+			t = new Track(explicit ? startedAt : now);
+			tracks.put(itemId, t);
+			if (explicit) t.counted += delta;
+		} else {
+			t.counted += delta;
+		}
+		t.total += delta;
+		t.lastAt = now;
 		currentId = itemId;
 	}
 
@@ -45,8 +81,10 @@ public final class FarmSession {
 		return currentId;
 	}
 
+	/** Alles, was in dieser Session für das Material dazukam */
 	public long gained(String itemId) {
-		return gained.getOrDefault(itemId, 0L);
+		Track t = tracks.get(itemId);
+		return t == null ? 0 : t.total;
 	}
 
 	public long elapsedMs(long now) {
@@ -55,10 +93,11 @@ public final class FarmSession {
 
 	/** Items pro Stunde für ein Material, -1 = noch keine Schätzung möglich */
 	public double perHour(String itemId, long now) {
-		long elapsed = elapsedMs(now);
-		long amount = gained(itemId);
-		if (elapsed < MIN_ELAPSED_MS || amount <= 0) return -1;
-		return amount * 3_600_000.0 / elapsed;
+		Track t = tracks.get(itemId);
+		if (t == null || t.counted <= 0) return -1;
+		long span = t.lastAt - t.firstAt;
+		if (span < MIN_ELAPSED_MS) return -1;
+		return t.counted * 3_600_000.0 / span;
 	}
 
 	/** Geschätzte Restzeit in Millisekunden bei gleichem Tempo, -1 = unbekannt, 0 = fertig */
