@@ -60,7 +60,9 @@ class ApiTest {
 						+ "\"stackSize\":64,\"farmed\":false,\"claimedBy\":\"Lars\",\"note\":\"im Nether holen\"}";
 				String items = partial ? (path.endsWith("since=" + version) ? "" : glass) : stone + "," + glass;
 				out = "{\"apiVersion\":1,\"id\":\"p1\",\"name\":\"Kirche\",\"role\":\"editor\",\"version\":" + version
-						+ ",\"partial\":" + partial + ",\"note\":\"Basis bei 120 64 -300\",\"items\":[" + items + "]}";
+						+ ",\"partial\":" + partial + ",\"note\":\"Basis bei 120 64 -300\",\"deadline\":\"2026-12-24\""
+						+ ",\"deadlineStatus\":{\"status\":\"tight\",\"daysLeft\":57,\"forecast\":\"2026-12-28\"}"
+						+ ",\"items\":[" + items + "]}";
 			} else {
 				status = 404;
 				out = "{\"error\":\"Not found.\"}";
@@ -101,6 +103,12 @@ class ApiTest {
 		assertEquals("Basis bei 120 64 -300", full.note());
 		assertEquals("im Nether holen", full.items().get(0).note());
 		assertEquals(null, full.items().get(1).note());
+		assertEquals(new Deadline("2026-12-24", "tight", 57, "2026-12-28"), full.deadline());
+		// Website ohne Status-Feld: nur das Datum; ohne Deadline: null
+		com.google.gson.JsonObject plain = com.google.gson.JsonParser.parseString("{\"deadline\":\"2026-12-24\"}").getAsJsonObject();
+		assertEquals(new Deadline("2026-12-24", null, null, null), TrackerApi.parseDeadline(plain));
+		assertEquals(null, TrackerApi.parseDeadline(com.google.gson.JsonParser.parseString("{\"deadline\":null}").getAsJsonObject()));
+		assertEquals(null, TrackerApi.parseDeadline(new com.google.gson.JsonObject()));
 
 		api.saveAmounts(base, TOKEN, List.of(new TrackerApi.AmountChange("i2", 64, false)), "Steve").get(5, TimeUnit.SECONDS);
 		TrackerApi.ListResponse changes = api.list(base, TOKEN, 1).get(5, TimeUnit.SECONDS);

@@ -49,7 +49,7 @@ public final class TrackerApi {
 	public record Pairing(String token, String listId, String name, String role) {}
 
 	public record ListResponse(String id, String name, String role, long version, boolean partial,
-			List<TrackedItem> items, String note) {}
+			List<TrackedItem> items, String note, Deadline deadline) {}
 
 	public record AmountChange(String id, int have, boolean farmed) {}
 
@@ -107,7 +107,19 @@ public final class TrackerApi {
 					optStr(i, "note")));
 		}
 		return new ListResponse(str(o, "id"), str(o, "name"), str(o, "role"), o.get("version").getAsLong(),
-				o.get("partial").getAsBoolean(), items, optStr(o, "note"));
+				o.get("partial").getAsBoolean(), items, optStr(o, "note"), parseDeadline(o));
+	}
+
+	/** "deadline" (seit v1-Erweiterung) und optional "deadlineStatus" (vorgeschlagen, kommt evtl. später) */
+	static Deadline parseDeadline(JsonObject o) {
+		String date = optStr(o, "deadline");
+		if (date == null) return null;
+		JsonElement s = o.get("deadlineStatus");
+		if (s == null || !s.isJsonObject()) return new Deadline(date, null, null, null);
+		JsonObject st = s.getAsJsonObject();
+		JsonElement days = st.get("daysLeft");
+		return new Deadline(date, optStr(st, "status"),
+				days == null || days.isJsonNull() ? null : days.getAsInt(), optStr(st, "forecast"));
 	}
 
 	/** Feld, das erst später in v1 dazukam: fehlt es oder ist es null, kommt null zurück */

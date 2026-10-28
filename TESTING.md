@@ -114,3 +114,16 @@ Mitbearbeiten-Link bzw. Kopplungscode – über Nur-Ansehen-Links liefert die We
 37. Einstellungen: Seite 1 = Verbindung + Aussehen, „Weitere Einstellungen…“ → Seite 2 (Meldungen, Farm-Session,
     Notizen, Claims), „‹ Zurück“. Eingegebene Website/Name gehen beim Seitenwechsel nicht verloren.
     Mit GUI-Größe 4 ist auf beiden Seiten „Fertig“ sichtbar.
+
+### Neu: Deadline (Feature 6)
+
+Wie bei den Notizen braucht es eine Website mit Deadline (`dev-main` der Website). Den Plan-Status liefert die
+Website erst, wenn `deadlineStatus` in API v1 ergänzt ist (siehe `CLAUDE.md`, Offene Punkte) – bis dahin zeigt die
+Mod nur das Datum.
+
+38. Auf der Website (als Besitzer) eine Deadline setzen → im HUD unter dem Titel „⌛ 24.12.2026“ (grau).
+39. In der Liste `K` steht die Deadline unter der Überschrift.
+40. Sobald die Website `deadlineStatus` liefert: „⌛ 24.12.2026 · noch 57 Tage · Knapp“ in Farbe
+    (grün Im Plan/Fertig, gelb Knapp, rot Im Rückstand/Überfällig, grau Zu wenig Daten); in `K` zusätzlich
+    „fertig ca. …“.
+41. Deadline auf der Website entfernen → Zeile verschwindet. Einstellungen Seite 2 „Deadline im HUD“ aus → nur im HUD weg.

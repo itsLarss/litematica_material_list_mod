@@ -126,5 +126,18 @@
   "schematic-tracker.config.hud_claims": "Who collects what",
   "schematic-tracker.config.claim_colors": "Names in color",
   "schematic-tracker.config.more": "More settings…",
-  "schematic-tracker.config.back": "‹ Back"
+  "schematic-tracker.config.back": "‹ Back",
+
+  "schematic-tracker.deadline.days_left": "%s days left",
+  "schematic-tracker.deadline.day_left": "1 day left",
+  "schematic-tracker.deadline.today": "today",
+  "schematic-tracker.deadline.days_over": "%s days ago",
+  "schematic-tracker.deadline.forecast": "done around %s",
+  "schematic-tracker.deadline.status.onTrack": "On track",
+  "schematic-tracker.deadline.status.tight": "Tight",
+  "schematic-tracker.deadline.status.behind": "Behind",
+  "schematic-tracker.deadline.status.done": "Done",
+  "schematic-tracker.deadline.status.overdue": "Overdue",
+  "schematic-tracker.deadline.status.unknown": "Not enough data yet",
+  "schematic-tracker.config.hud_deadline": "Deadline in HUD"
 }

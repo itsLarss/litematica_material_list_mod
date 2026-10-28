@@ -45,6 +45,9 @@ Litematica und funktioniert auf jedem Server.
 - **Einstellungen auf zwei Seiten** (`TrackerConfigScreen.morePage`): Seite 1 Verbindung + Aussehen, Seite 2
   Meldungen, Farm-Session, Notizen, Claims. Neue Optionen auf Seite 2; beide Seiten müssen bei GUI-Größe 4
   (270 px hoch) passen.
+- **Deadline (nur anzeigen):** `deadline` aus API v1 und – falls vorhanden – `deadlineStatus` (`core/Deadline`,
+  `TrackerApi.parseDeadline`). Ohne Status nur das Datum, die Mod rechnet nicht selbst. HUD-Zeile (`hudDeadline`)
+  und Überschrift in `K`, Farbe nach Status.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
   eigener Name für „Meine“, Fertig-Meldung/-Ton/Konfetti.
@@ -249,6 +252,13 @@ Neue Minecraft-Version hinzufügen:
 ---
 
 ## 7. Offene Punkte / Ideen
+
+- **Website-Änderung für die Deadline-Anzeige** (abwärtskompatibel, nur ein neues Feld in API v1):
+  `GET /api/v1/list` bekommt `deadlineStatus`, berechnet auf dem Server mit dem vorhandenen `deadlineInfo` und
+  `paceBase` (`src/lib/deadline.ts`), `null` wenn keine Deadline:
+  `{ "status": "onTrack|tight|behind|done|overdue|unknown", "daysLeft": 57, "forecast": "2026-12-28" | null }`.
+  Die Mod liest das Feld schon (`TrackerApi.parseDeadline`); alte Mods ignorieren es.
+- **Website: Notizen und Deadline live bringen** (`dev-main` → `main`), sonst sieht die Mod sie nicht.
 
 - **Standard-Website-Adresse** eintragen, sobald die Domain feststeht (dann entfällt `/tracker server`).
 - **„Aus Inventar zählen“** (Menge aus dem eigenen Inventar übernehmen) – noch nicht gebaut.

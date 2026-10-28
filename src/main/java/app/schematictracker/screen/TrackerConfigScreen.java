@@ -141,6 +141,8 @@ public final class TrackerConfigScreen extends CompatScreen {
 		y += 22;
 		addRenderableWidget(CycleButton.onOffBuilder(c.claimColors)
 				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.claim_colors"), (b, v) -> c.claimColors = v));
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudDeadline)
+				.create(right, y, w, 20, Component.translatable("schematic-tracker.config.hud_deadline"), (b, v) -> c.hudDeadline = v));
 		y += 26;
 
 		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.back"), b -> switchPage(false))
