@@ -1,6 +1,6 @@
 # Schematic Tracker – Minecraft mod
 
-Fabric client mod for the Schematic Tracker website. It shows your material list as a small HUD in the corner,
+Client mod for Fabric and NeoForge for the Schematic Tracker website. It shows your material list as a small HUD in the corner,
 in the style of the Litematica material list, and keeps it in sync with the website in both directions.
 
 - **Connect** with a short code from the website (*Share → Minecraft mod → Create code*) or with a share link.
@@ -16,17 +16,24 @@ in the style of the Litematica material list, and keeps it in sync with the webs
 
 ## Versions
 
-| Minecraft     | Mod version | Jar                                 |
-| ------------- | ----------- | ----------------------------------- |
-| 26.1 – 26.1.2 | 0.1.1       | `schematic-tracker-0.1.1-26.1.jar`  |
-| 26.2          | 0.1.2       | `schematic-tracker-0.1.2-26.2.jar`  |
-| 26.3          | 0.1.3       | `schematic-tracker-0.1.3-26.3.jar`  |
+One jar per Minecraft version and loader, named `schematic-tracker-<mod version>+<minecraft>-<loader>.jar`,
+for example `schematic-tracker-0.2.0+26.3-fabric.jar`.
 
-Requires Fabric Loader ≥ 0.19.5, Fabric API and Java 25. Mod Menu is optional.
+| Minecraft      | Fabric | NeoForge | Java |
+| -------------- | ------ | -------- | ---- |
+| 26.1 – 26.1.2  | ✓ (one jar for all three) | ✓ (26.1.2 only) | 25 |
+| 26.2, 26.3     | ✓ | ✓ | 25 |
+| 1.21 – 1.21.1  | ✓ (one jar for both) | ✓ (one jar each) | 21 |
+| 1.21.2 … 1.21.11 | ✓ (one jar each) | ✓ for 1.21.3, 1.21.4, 1.21.5, 1.21.8, 1.21.10, 1.21.11 | 21 |
+
+NeoForge is only built where NeoForge has a stable release (not for 1.21.2, 1.21.6, 1.21.7 and 1.21.9).
+Fabric needs Fabric API; Mod Menu is optional. On NeoForge the settings open from the mod list.
+
+Older releases (up to `0.1.3`) used the scheme `0.0.<x>-1.21.<x>` and `0.1.<x>-26.<x>` and were Fabric only.
 
 ## Usage
 
-1. Install the jar matching your Minecraft version (plus Fabric API) into `mods/`.
+1. Install the jar matching your Minecraft version and loader into `mods/` (on Fabric also Fabric API).
 2. Set the website once: `/tracker server https://<your website>` (or in the settings).
 3. On the website, open your list → *Share* → *Minecraft mod* → *Create code*.
 4. In game: `/tracker link K7QM-4XPA`. Done – the HUD appears bottom right.
@@ -61,36 +68,39 @@ while the game is paused.
 
 ## Branches
 
-`main` always holds the newest Minecraft version. Older Minecraft versions get their own branches.
-Never merge branches of different Minecraft lines into each other – each line has its own build setup.
+All Minecraft versions and both loaders live in one code base.
 
-| Branch        | Minecraft | Purpose                                   |
-| ------------- | --------- | ----------------------------------------- |
-| `main`        | 26.x      | Release of the newest Minecraft line      |
-| `dev-26.x`    | 26.x      | Development for 26.x → merge into `main`  |
-| `dev-main`    | 26.x      | Work in progress → merge into `dev-26.x`  |
-| `main-1.21.x` | 1.21.x    | Release of the 1.21 line                  |
-| `dev-1.21.x`  | 1.21.x    | Development for 1.21.x → merge into `main-1.21.x` |
-
-Pull requests always go from the work branch (compare) into the next branch of the **same** line (base):
-`dev-main → dev-26.x → main` and `dev-1.21.x → main-1.21.x`.
-
-When a new Minecraft line becomes the newest, its branches take over `main`, and the previous line moves to its
-own `main-<version>` branch.
+| Branch     | Purpose                                     |
+| ---------- | ------------------------------------------- |
+| `main`     | Releases                                    |
+| `dev-main` | Development → pull request into `main`      |
 
 ## Building
 
+Needs JDK 25 to run Gradle (the 1.21 jars are still built for Java 21).
+
 ```bash
-./gradlew build                # Minecraft 26.3
-./gradlew build -Pmc=26.1      # 26.1.x
-./gradlew build -Pmc=26.2
-./gradlew runClient            # test client
+./gradlew buildAll                         # tests + every version and loader → build/libs/<mod version>/
+./gradlew :26.3-fabric:buildAndCollect     # one combination → build/libs/<mod version>/
+./gradlew :1.21.4-neoforge:build           # one combination → versions/1.21.4-neoforge/build/libs/
+./gradlew :core:test                       # unit tests only
+./gradlew :26.3-fabric:runClient           # test client (folder run/26.3-fabric/)
 ```
 
-Each Minecraft version has a file in `versions/` (Minecraft, Fabric API, Mod Menu, supported range, mod
-version).
-Code that differs between versions lives in `src/compat/<group>/` (26.1.x and 26.2+ keep the current screen in
-different places). The website API is documented in the website repo (`docs/api-v1.md`).
+The build uses [Stonecutter](https://stonecutter.kikugie.dev/): every combination is a subproject in
+`versions/<minecraft>-<loader>/`, and all of them share the sources in `src/main/`.
+
+- `core/` – plain Java without Minecraft (website API, sync, filter, amounts) with its own tests.
+- `src/main/java/…/compat/` – the few places that differ between Minecraft versions, written as
+  Stonecutter conditions (`//? if >=1.21.6 { … }`). The rest of the code only calls these.
+- `src/main/java/…/fabric/` and `…/neoforge/` – thin loader layers (entry point, keys, HUD, commands, settings).
+- `stonecutter.properties.toml` – versions of Minecraft, Fabric API, NeoForge, Mod Menu and the supported ranges.
+
+The code in `src/main/` is always written for the active version (`26.3-fabric`); Stonecutter comments out the
+parts for other versions. To work on another version, switch with `./gradlew "Set active project to 1.21.4-fabric"`
+and switch back to `26.3-fabric` before committing.
+
+The website API is documented in the website repo (`docs/api-v1.md`).
 
 ## License
 
