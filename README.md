@@ -85,6 +85,8 @@ Needs JDK 25 to run Gradle (the 1.21 jars are still built for Java 21).
 ./gradlew :1.21.4-neoforge:build           # one combination → versions/1.21.4-neoforge/build/libs/
 ./gradlew :core:test                       # unit tests only
 ./gradlew :26.3-fabric:runClient           # test client (folder run/26.3-fabric/)
+./gradlew runClients -Pclients=fabric      # several test clients at once (all | fabric | neoforge |
+                                           #   1.21.4 | 26.3-neoforge, comma separated)
 ```
 
 The build uses [Stonecutter](https://stonecutter.kikugie.dev/): every combination is a subproject in

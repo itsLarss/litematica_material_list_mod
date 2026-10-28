@@ -85,6 +85,8 @@ auf Fabric `schematic-tracker`. Sprachdateien, Config-Datei und Texte sind gleic
 ./gradlew :1.21.4-neoforge:build           # eine Kombination → versions/1.21.4-neoforge/build/libs/
 ./gradlew :core:test                       # nur die Unit-Tests
 ./gradlew :26.3-fabric:runClient           # Minecraft mit der Mod starten (Ordner run/26.3-fabric/)
+./gradlew runClients -Pclients=fabric      # mehrere Clients gleichzeitig: all | fabric | neoforge |
+                                           #   Version (1.21.4) | Kombination (26.3-neoforge), kommagetrennt
 ./gradlew publishDryRun                    # Modrinth-Trockenlauf, lädt NICHTS hoch
 ```
 
@@ -103,6 +105,9 @@ Neue Kombination = auch in die Matrix dort eintragen.
 4. Prüfen: HUD erscheint, Änderung auf der Website taucht nach ein paar Sekunden auf, `K` öffnet die Liste,
    Klick setzt „Ich sammle das“ (erscheint im Verlauf der Website). Auf NeoForge zusätzlich: Mod-Liste →
    Schematic Tracker → Einstellungen.
+
+Jeder Test-Client bekommt höchstens 2 GB Speicher (`-PclientMemory=3G` ändert das). Alle 25 gleichzeitig brauchen
+entsprechend viel RAM – lieber gruppenweise starten.
 
 Im Entwicklungs-Client heißt der Spieler jedes Mal anders (`Player123`), deshalb ist „Meine“ dort meist leer.
 

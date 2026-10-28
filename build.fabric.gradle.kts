@@ -35,6 +35,8 @@ sourceSets.main {
 loom {
 	runConfigs.all {
 		runDirectory = rootProject.file("run/${sc.current.project}")
+		// Begrenzter Speicher, damit mehrere Clients gleichzeitig laufen können (runClients)
+		vmArg("-Xmx${findProperty("clientMemory") ?: "2G"}")
 	}
 }
 
