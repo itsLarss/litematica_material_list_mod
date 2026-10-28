@@ -139,5 +139,10 @@
   "schematic-tracker.deadline.status.done": "Fertig",
   "schematic-tracker.deadline.status.overdue": "Überfällig",
   "schematic-tracker.deadline.status.unknown": "Noch zu wenig Daten",
-  "schematic-tracker.config.hud_deadline": "Deadline im HUD"
+  "schematic-tracker.config.hud_deadline": "Deadline im HUD",
+
+  "schematic-tracker.preset.minimal": "Minimal",
+  "schematic-tracker.preset.clear": "Übersichtlich",
+  "schematic-tracker.preset.all": "Alles",
+  "schematic-tracker.preset.applied": "Voreinstellung „%s“ übernommen. Einzelne Optionen bleiben änderbar."
 }

@@ -24,6 +24,8 @@ in the style of the Litematica material list, and keeps it in sync with the webs
   (can be turned off or shown in gray).
 - **Deadline:** the list's target date from the website in the HUD and the full list, with "on track / tight /
   behind" once the website provides it. The mod only displays what the website calculates.
+- **Presets:** *Minimal*, *Clear* (default) and *Everything* on the second settings page or with
+  `/tracker config preset <minimal|clear|all>`. Single options stay changeable afterwards.
 - **Settings** (two pages) via Mod Menu, the NeoForge mod list, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
   unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
   done message, sound and confetti.
@@ -74,6 +76,7 @@ Instead of a code you can also paste a share link: `/tracker link https://<websi
 | `/tracker session [start\|stop]`     | Farm session: rate and time left, restart or stop |
 | `/tracker list`                      | Full list (default key `K`)               |
 | `/tracker config`                    | Settings                                  |
+| `/tracker config preset <minimal\|clear\|all>` | Apply a preset                 |
 
 "Mine" compares the list's "collecting" name with your name from the settings (default: your Minecraft name),
 so use the same name on the website.

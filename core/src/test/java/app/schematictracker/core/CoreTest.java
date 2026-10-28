@@ -139,6 +139,36 @@ class CoreTest {
 	}
 
 	@Test
+	void presetsChangeOnlyDisplayOptions() {
+		TrackerConfig c = new TrackerConfig();
+		c.server = "https://tracker.example";
+		c.token = "t";
+		c.filter = ListView.Filter.MINE;
+		c.corner = TrackerConfig.Corner.TOP_LEFT;
+		c.playerName = "Steve";
+		// Ohne Änderung entspricht die Standard-Config "Übersichtlich"
+		assertTrue(Preset.CLEAR.matches(new TrackerConfig()));
+
+		Preset.MINIMAL.apply(c);
+		assertEquals(3, c.rows);
+		assertFalse(c.notifyToast || c.notifySound || c.notifyConfetti || c.hudClaims || c.hudSession || c.hudNotes);
+		assertTrue(Preset.MINIMAL.matches(c));
+		assertFalse(Preset.ALL.matches(c));
+
+		Preset.ALL.apply(c);
+		assertEquals(12, c.rows);
+		assertTrue(c.hudNotes && c.hudClaims && c.hudSession && c.hudDeadline && c.notifyConfetti);
+		// Danach einzeln änderbar; Verbindung, Filter, Ecke und Name bleiben unberührt
+		c.rows = 8;
+		assertFalse(Preset.ALL.matches(c));
+		assertEquals("https://tracker.example", c.server);
+		assertEquals(ListView.Filter.MINE, c.filter);
+		assertEquals(TrackerConfig.Corner.TOP_LEFT, c.corner);
+		assertEquals("Steve", c.playerName);
+		assertEquals("minimal", Preset.MINIMAL.id());
+	}
+
+	@Test
 	void convertsUnits() {
 		assertEquals(40.75, Amounts.inUnit(70416, 64, Amounts.Unit.SHULKER), 0.01);
 		assertEquals(2.0, Amounts.inUnit(128, 64, Amounts.Unit.STACKS), 1e-9);
