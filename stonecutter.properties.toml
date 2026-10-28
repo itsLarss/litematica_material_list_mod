@@ -4,7 +4,7 @@
 # Neue Version: Abschnitte hier ergänzen und in settings.gradle.kts eintragen.
 mod.id = "schematic-tracker"
 mod.name = "Schematic Tracker"
-mod.group = "de.cozyverse.schematictracker"
+mod.group = "app.schematictracker"
 mod.version = "0.2.0"
 
 deps.fabric_loader = "0.20.1"
