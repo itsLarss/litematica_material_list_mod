@@ -203,7 +203,8 @@ Loader-Unterschiede: `//? if fabric { … }` bzw. `neoforge`; außerdem landet `
 
 **Tastencodes nie als feste Zahl** (z. B. 74 für J): Ab 26.3 nutzt Minecraft SDL statt GLFW, die Codes sind
 andere (J = 13, Enter = 40, „keine Taste“ = 0 statt -1). Immer `InputConstants.KEY_…` bzw.
-`InputConstants.UNKNOWN.getValue()` verwenden – das wird pro Version richtig einkompiliert.
+`InputConstants.UNKNOWN.getValue()` verwenden – das wird pro Version richtig einkompiliert. Gleiches gilt für
+Maustasten: `InputConstants.MOUSE_BUTTON_LEFT/RIGHT` (bis 1.21.11: 0/1, ab 26.3: 1/3).
 
 Auf NeoForge ab 1.21.9 die Tasten-Kategorie **nicht** über `KeyMapping.Category.register` anlegen (wirft sonst
 „already registered“), sondern über `RegisterKeyMappingsEvent#registerCategory` (siehe `Compat`).
