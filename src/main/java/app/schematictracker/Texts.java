@@ -96,4 +96,15 @@ public final class Texts {
 		lines.replaceAll(l -> shorten(font, l, width));
 		return lines;
 	}
+
+	/** Gut lesbare Farben für Namen auf dunklem Grund */
+	private static final int[] NAME_COLORS = {
+			0xFF55FFFF, 0xFFFF55FF, 0xFF55FF55, 0xFFFFAA00, 0xFF5599FF, 0xFFFF7777, 0xFFAAFFAA, 0xFFDDAAFF};
+
+	/** Farbe für "wer sammelt": je Name immer gleich (wenn eingeschaltet), sonst grau */
+	public static int claimColor(String name) {
+		if (!app.schematictracker.SchematicTrackerClient.config().claimColors || name == null) return 0xFFAAAAAA;
+		int hash = name.trim().toLowerCase(Locale.ROOT).hashCode();
+		return NAME_COLORS[Math.floorMod(hash, NAME_COLORS.length)];
+	}
 }

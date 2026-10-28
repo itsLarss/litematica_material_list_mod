@@ -103,3 +103,14 @@ Mitbearbeiten-Link bzw. Kopplungscode – über Nur-Ansehen-Links liefert die We
 31. Notiz auf der Website löschen → verschwindet im Spiel. Gar keine Notizen → kein Notizbereich in der Liste.
 32. Einstellungen „Notizen im HUD“ aus → HUD ohne Notizen, Liste (K) zeigt sie weiter.
 33. Live-Website ohne Notizen (aktueller Stand `main`) → keine Fehler, einfach keine Notizen.
+
+### Neu: Wer sammelt was im HUD (Feature 5) und Einstellungen auf zwei Seiten
+
+34. Auf der Website (oder von einem Freund) „Ich sammle das“ für ein Material setzen → im HUD erscheint der Name
+    links neben der Menge, farbig (je Name immer dieselbe Farbe). Eigene Claims: gelber Materialname wie bisher,
+    kein Name.
+35. In der Liste `K` sind die Namen anderer ebenfalls farbig, „du“ bleibt grau.
+36. Einstellungen Seite 2: „Wer sammelt was“ aus → keine Namen im HUD; „Namen farbig“ aus → grau.
+37. Einstellungen: Seite 1 = Verbindung + Aussehen, „Weitere Einstellungen…“ → Seite 2 (Meldungen, Farm-Session,
+    Notizen, Claims), „‹ Zurück“. Eingegebene Website/Name gehen beim Seitenwechsel nicht verloren.
+    Mit GUI-Größe 4 ist auf beiden Seiten „Fertig“ sichtbar.

@@ -11,4 +11,6 @@
 - Farm session: items per hour and estimated time left for the material you're farming, shown in the HUD.
   Restart with `/tracker session start`, a key or the settings.
 - Notes from the website: short in the HUD, in full in the list (`K`). Only with a co-edit connection.
+- Who collects what: other players' claims in the HUD, names in color (optional).
+- Settings split into two pages so everything fits at large GUI scales.
 - Your settings in `config/schematic-tracker.json` are kept.

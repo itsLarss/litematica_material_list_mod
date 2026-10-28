@@ -26,6 +26,8 @@ public final class TrackerConfigScreen extends CompatScreen {
 	private EditBox code;
 	private EditBox playerName;
 	private Component message = Component.empty();
+	/** Seite 2: Meldungen, Farm-Session, Notizen, Claims (damit alles auch bei großer GUI-Skalierung passt) */
+	private boolean morePage;
 
 	public TrackerConfigScreen(Screen parent) {
 		super(Component.translatable("schematic-tracker.config.title"));
@@ -48,6 +50,10 @@ public final class TrackerConfigScreen extends CompatScreen {
 		int left = width / 2 - w - gap / 2;
 		int right = width / 2 + gap / 2;
 		int y = 32;
+		if (morePage) {
+			initMorePage(c, w, left, right, y);
+			return;
+		}
 
 		// Verbindung
 		server = new EditBox(font, left, y, w * 2 + gap, 20, Component.translatable("schematic-tracker.config.server"));
@@ -103,8 +109,14 @@ public final class TrackerConfigScreen extends CompatScreen {
 		playerName.setValue(c.playerName);
 		playerName.setHint(Component.translatable("schematic-tracker.config.player_hint", minecraft.getUser().getName()));
 		addRenderableWidget(playerName);
-		y += 22;
+		y += 26;
 
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.more"), b -> switchPage(true))
+				.bounds(left, y, w, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(right, y, w, 20).build());
+	}
+
+	private void initMorePage(TrackerConfig c, int w, int left, int right, int y) {
 		// Fertig-Meldungen
 		addRenderableWidget(CycleButton.onOffBuilder(c.notifyToast)
 				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.notify_toast"), (b, v) -> c.notifyToast = v));
@@ -124,10 +136,32 @@ public final class TrackerConfigScreen extends CompatScreen {
 		y += 22;
 		addRenderableWidget(CycleButton.onOffBuilder(c.hudNotes)
 				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.hud_notes"), (b, v) -> c.hudNotes = v));
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudClaims)
+				.create(right, y, w, 20, Component.translatable("schematic-tracker.config.hud_claims"), (b, v) -> c.hudClaims = v));
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.claimColors)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.claim_colors"), (b, v) -> c.claimColors = v));
 		y += 26;
 
-		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-				.bounds(width / 2 - 100, Math.max(y, Math.min(height - 28, y + 8)), 200, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.back"), b -> switchPage(false))
+				.bounds(left, y, w, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(right, y, w, 20).build());
+	}
+
+	/** Seite wechseln; Eingaben der ersten Seite vorher übernehmen */
+	private void switchPage(boolean more) {
+		keepTextFields();
+		morePage = more;
+		message = Component.empty();
+		rebuildWidgets();
+	}
+
+	private void keepTextFields() {
+		if (server != null) applyServer();
+		if (playerName != null) config().playerName = playerName.getValue().trim();
+		server = null;
+		code = null;
+		playerName = null;
 	}
 
 	private void link() {
@@ -184,13 +218,12 @@ public final class TrackerConfigScreen extends CompatScreen {
 					Component.translatable("schematic-tracker.status." + sync.status().name().toLowerCase(Locale.ROOT)));
 		}
 		g.centered(font, state, width / 2, 20, 0xFFFFFFFF);
-		g.centered(font, message, width / 2, 32 + 24 + 23, 0xFFFFFFFF);
+		if (!morePage) g.centered(font, message, width / 2, 32 + 24 + 23, 0xFFFFFFFF);
 	}
 
 	@Override
 	public void onClose() {
-		applyServer();
-		config().playerName = playerName.getValue().trim();
+		keepTextFields();
 		SchematicTrackerClient.saveConfig();
 		Compat.setScreen(minecraft, parent);
 	}

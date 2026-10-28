@@ -121,5 +121,10 @@
   "schematic-tracker.note.item": "Note on %s:",
   "schematic-tracker.note.list": "Note on the list:",
   "schematic-tracker.note.hover": "✎ Hover a material to read its note.",
-  "schematic-tracker.config.hud_notes": "Notes in HUD"
+  "schematic-tracker.config.hud_notes": "Notes in HUD",
+
+  "schematic-tracker.config.hud_claims": "Who collects what",
+  "schematic-tracker.config.claim_colors": "Names in color",
+  "schematic-tracker.config.more": "More settings…",
+  "schematic-tracker.config.back": "‹ Back"
 }

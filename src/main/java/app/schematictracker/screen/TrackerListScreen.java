@@ -253,7 +253,7 @@ public final class TrackerListScreen extends CompatScreen {
 			g.text(font, right, rightX, y + 6, item.complete() ? 0xFF55FF55 : 0xFFFFAA00);
 			if (item.claimedBy() != null) {
 				String who = mine ? Component.translatable("schematic-tracker.list.you").getString() : item.claimedBy();
-				g.text(font, who, rightX - 8 - font.width(who), y + 6, 0xFFAAAAAA);
+				g.text(font, who, rightX - 8 - font.width(who), y + 6, mine ? 0xFFAAAAAA : Texts.claimColor(item.claimedBy()));
 			}
 		}
 		if (rows.isEmpty()) {

@@ -20,7 +20,9 @@ in the style of the Litematica material list, and keeps it in sync with the webs
   `/tracker session start`, a key (unbound by default, see Controls) or the settings.
 - **Notes:** notes from the website (on the list and on materials, e.g. coordinates) show up short in the HUD and in
   full in the list (`K`, hover a material). Read only; only with a co-edit connection, never via view-only links.
-- **Settings** via Mod Menu, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
+- **Who collects what:** other players' claims appear next to the amount in the HUD, each name in its own color
+  (can be turned off or shown in gray).
+- **Settings** (two pages) via Mod Menu, the NeoForge mod list, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
   unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
   done message, sound and confetti.
 - English and German, following the game language.
