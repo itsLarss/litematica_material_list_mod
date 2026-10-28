@@ -1,5 +1,5 @@
 # Zentrale Versionsliste. Ein Abschnitt pro Minecraft-Version ("26.3") und pro Kombination (fabric."26.3").
-# mod.mc_releases = Minecraft-Versionen, die auf Modrinth/CurseForge angehakt werden
+# mod.mc_releases = Minecraft-Versionen, die auf Modrinth angehakt werden
 # mod.mc_compat   = erlaubter Bereich in fabric.mod.json bzw. neoforge.mods.toml
 # Neue Version: Abschnitte hier ergänzen und in settings.gradle.kts eintragen.
 mod.id = "schematic-tracker"
@@ -9,9 +9,8 @@ mod.version = "0.2.0"
 
 deps.fabric_loader = "0.20.1"
 
-# Projekt-IDs für den Release-Trockenlauf (leer = Modrinth-Slug "schematic-tracker", CurseForge aus)
-publish.modrinth = ""
-publish.curseforge = ""
+# Modrinth-Projekt-ID (Veröffentlicht wird nur auf Modrinth)
+publish.modrinth = "gRThwpec"
 
 ["1.21"]
 mod.mc_releases = ["1.21", "1.21.1"]
