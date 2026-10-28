@@ -9,13 +9,13 @@
 	"icon": "assets/schematic-tracker/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["de.cozyverse.schematictracker.SchematicTrackerClient"],
-		"modmenu": ["de.cozyverse.schematictracker.modmenu.ModMenuIntegration"]
+		"client": ["de.cozyverse.schematictracker.fabric.FabricClient"],
+		"modmenu": ["de.cozyverse.schematictracker.fabric.ModMenuIntegration"]
 	},
 	"depends": {
-		"fabricloader": ">=0.19.5",
-		"minecraft": "${minecraft_range}",
-		"java": ">=25",
+		"fabricloader": ">=${loader}",
+		"minecraft": "${minecraft}",
+		"java": ">=${java}",
 		"fabric-api": "*"
 	},
 	"suggests": {
