@@ -9,6 +9,10 @@ mod.version = "0.2.0"
 
 deps.fabric_loader = "0.20.1"
 
+# Projekt-IDs für den Release-Trockenlauf (leer = Modrinth-Slug "schematic-tracker", CurseForge aus)
+publish.modrinth = ""
+publish.curseforge = ""
+
 ["1.21"]
 mod.mc_releases = ["1.21", "1.21.1"]
 

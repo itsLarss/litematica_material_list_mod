@@ -1,5 +1,6 @@
 plugins {
 	id("net.neoforged.moddev")
+	id("me.modmuss50.mod-publish-plugin")
 }
 
 val release = property("mod.version") as String
@@ -74,4 +75,32 @@ tasks {
 java {
 	sourceCompatibility = JavaVersion.toVersion(javaVersion)
 	targetCompatibility = JavaVersion.toVersion(javaVersion)
+}
+
+// Release-Vorbereitung für Modrinth (und optional CurseForge). Nur Trockenlauf, es wird nie hochgeladen.
+val mcReleases = sc.properties.rawOrNull("mod", "mc_releases")?.asList().orEmpty().map { it.toString() }
+
+publishMods {
+	file = tasks.jar.flatMap { it.archiveFile }
+	version = modVersion
+	displayName = "Schematic Tracker $release for NeoForge ${mcReleases.first()}${if (mcReleases.size > 1) "–" + mcReleases.last() else ""}"
+	changelog = providers.provider { rootProject.file("CHANGELOG.md").readText() }
+	type = STABLE
+	modLoaders.add("neoforge")
+	dryRun = true
+
+	modrinth {
+		projectId = (findProperty("publish.modrinth") as String?).orEmpty().ifBlank { "schematic-tracker" }
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersions.addAll(mcReleases)
+	}
+
+	if ((findProperty("publish.curseforge") as String?).orEmpty().isNotBlank()) curseforge {
+		projectId = findProperty("publish.curseforge") as String
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		minecraftVersions.addAll(mcReleases)
+		client = true
+		server = false
+		javaVersions.add(JavaVersion.toVersion(javaVersion))
+	}
 }
