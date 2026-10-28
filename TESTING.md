@@ -80,6 +80,9 @@ Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
     Tab-Vervollständigung schlägt die IDs der Liste vor. Unbekanntes Item / mehrdeutig → verständliche Meldung.
 16. Mit Nur-Ansehen-Link: Rechtsklick tut nichts, Befehle melden „Nur-Ansehen-Link“.
 
+Rückmeldung 28.10.: Klicks in der Liste (`K`) unter 26.3 Fabric und NeoForge nach dem Fix wie in den anderen
+Versionen (links = sammeln, rechts = Menge eintragen).
+
 Rückmeldung 28.10.: Feature 1 funktioniert im Spiel (welche Kombinationen, wurde nicht notiert – bitte in der
 Tabelle oben nachtragen).
 
