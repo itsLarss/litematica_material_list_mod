@@ -15,6 +15,7 @@ import app.schematictracker.core.QuickAmount;
 import app.schematictracker.core.TrackedItem;
 import app.schematictracker.core.TrackedList;
 import app.schematictracker.core.ListView;
+import app.schematictracker.core.Preset;
 import app.schematictracker.core.TrackerConfig;
 import app.schematictracker.core.TrackerLink;
 import app.schematictracker.screen.TrackerConfigScreen;
@@ -31,7 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * /tracker link|unlink|server|status|refresh|hud|filter|sort|list|config|add|set|session
+ * /tracker link|unlink|server|status|refresh|hud|filter|sort|list|config [preset]|add|set|session
  * Unabhängig vom Loader: der Befehlsbaum ist generisch, Rückmeldungen laufen über {@link Feedback}.
  */
 public final class TrackerCommands {
@@ -79,6 +80,21 @@ public final class TrackerCommands {
 				}
 				return builder.buildFuture();
 			};
+		}
+
+		/** /tracker config preset minimal|clear|all */
+		private LiteralArgumentBuilder<S> presets() {
+			LiteralArgumentBuilder<S> preset = literal("preset");
+			for (Preset p : Preset.values()) {
+				preset.then(literal(p.id()).executes(ctx -> {
+					p.apply(SchematicTrackerClient.config());
+					SchematicTrackerClient.saveConfig();
+					out(ctx).ok(Component.translatable("schematic-tracker.preset.applied",
+							Component.translatable("schematic-tracker.preset." + p.id())));
+					return 1;
+				}));
+			}
+			return preset;
 		}
 
 		private Feedback out(CommandContext<S> ctx) {
@@ -138,7 +154,7 @@ public final class TrackerCommands {
 					.then(literal("config").executes(ctx -> {
 						SchematicTrackerClient.openLater(new TrackerConfigScreen(null));
 						return 1;
-					}));
+					}).then(presets()));
 
 			var filter = literal("filter");
 			for (ListView.Filter f : ListView.Filter.values()) {

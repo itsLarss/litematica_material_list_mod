@@ -48,11 +48,14 @@ Litematica und funktioniert auf jedem Server.
 - **Deadline (nur anzeigen):** `deadline` aus API v1 und – falls vorhanden – `deadlineStatus` (`core/Deadline`,
   `TrackerApi.parseDeadline`). Ohne Status nur das Datum, die Mod rechnet nicht selbst. HUD-Zeile (`hudDeadline`)
   und Überschrift in `K`, Farbe nach Status.
+- **Voreinstellungen:** `core/Preset` (MINIMAL, CLEAR = Standard, ALL) setzt nur Anzeige- und Meldungs-Optionen,
+  nie Verbindung, Filter, Sortierung, Einheit, Ecke oder Name. Knöpfe oben auf Seite 2 (aktive mit „✔“) und
+  `/tracker config preset <minimal|clear|all>`. Neue Anzeige-Optionen auch in `Preset.apply` und `matches` eintragen.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
   eigener Name für „Meine“, Fertig-Meldung/-Ton/Konfetti.
 - **Befehle:** `/tracker` (Status), `link`, `unlink`, `server`, `status`, `refresh`, `hud [on|off]`,
-  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`, `add <item> <menge>`, `set <item> <menge>`, `session [start|stop]`.
+  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`, `add <item> <menge>`, `set <item> <menge>`, `session [start|stop]`, `config preset <minimal|clear|all>`.
 - **Sprachen:** Englisch und Deutsch (`en_us.json`, `de_de.json`), richtet sich nach der Spielsprache.
 
 ---

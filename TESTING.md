@@ -127,3 +127,11 @@ Mod nur das Datum.
     (grün Im Plan/Fertig, gelb Knapp, rot Im Rückstand/Überfällig, grau Zu wenig Daten); in `K` zusätzlich
     „fertig ca. …“.
 41. Deadline auf der Website entfernen → Zeile verschwindet. Einstellungen Seite 2 „Deadline im HUD“ aus → nur im HUD weg.
+
+### Neu: Voreinstellungen (Feature 7)
+
+42. Einstellungen Seite 2, oberste Zeile: „Minimal“ → 3 Zeilen, kleiner, keine Meldungen/Zusatzzeilen; „✔“ am
+    aktiven Knopf; Meldung unten. „Übersichtlich“ = Standard (6 Zeilen, alles an). „Alles“ = 12 Zeilen.
+43. Danach eine Einzeloption ändern → geht, das „✔“ verschwindet.
+44. `/tracker config preset minimal` (bzw. `clear`, `all`) → Meldung im Chat, HUD passt sich sofort an.
+45. Verbindung, Filter, Sortierung, Einheit, Ecke und Name bleiben bei jeder Voreinstellung unverändert.

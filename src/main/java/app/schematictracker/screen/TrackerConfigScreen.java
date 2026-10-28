@@ -9,6 +9,7 @@ import app.schematictracker.compat.Gfx;
 import app.schematictracker.core.Amounts;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.ListView;
+import app.schematictracker.core.Preset;
 import app.schematictracker.core.TrackerConfig;
 import app.schematictracker.core.TrackerLink;
 import java.util.Locale;
@@ -117,6 +118,23 @@ public final class TrackerConfigScreen extends CompatScreen {
 	}
 
 	private void initMorePage(TrackerConfig c, int w, int left, int right, int y) {
+		// Voreinstellungen: setzen Aussehen und Meldungen, einzeln bleibt alles änderbar
+		int pw = (w * 2 + 8 - 2 * 4) / 3;
+		Preset[] presets = Preset.values();
+		for (int i = 0; i < presets.length; i++) {
+			Preset preset = presets[i];
+			Component label = Component.translatable("schematic-tracker.preset." + preset.id());
+			if (preset.matches(c)) label = Component.literal("✔ ").append(label);
+			addRenderableWidget(Button.builder(label, b -> {
+				preset.apply(c);
+				SchematicTrackerClient.saveConfig();
+				message = Component.translatable("schematic-tracker.preset.applied",
+						Component.translatable("schematic-tracker.preset." + preset.id()));
+				rebuildWidgets();
+			}).bounds(left + i * (pw + 4), y, pw, 20).build());
+		}
+		y += 26;
+
 		// Fertig-Meldungen
 		addRenderableWidget(CycleButton.onOffBuilder(c.notifyToast)
 				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.notify_toast"), (b, v) -> c.notifyToast = v));
@@ -220,7 +238,7 @@ public final class TrackerConfigScreen extends CompatScreen {
 					Component.translatable("schematic-tracker.status." + sync.status().name().toLowerCase(Locale.ROOT)));
 		}
 		g.centered(font, state, width / 2, 20, 0xFFFFFFFF);
-		if (!morePage) g.centered(font, message, width / 2, 32 + 24 + 23, 0xFFFFFFFF);
+		g.centered(font, message, width / 2, morePage ? height - 12 : 32 + 24 + 23, 0xFFFFFFFF);
 	}
 
 	@Override

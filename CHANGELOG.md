@@ -14,4 +14,5 @@
 - Who collects what: other players' claims in the HUD, names in color (optional).
 - Settings split into two pages so everything fits at large GUI scales.
 - Deadline of the list in the HUD and the full list, with the website's on-track status where available.
+- Presets: Minimal, Clear and Everything (settings or `/tracker config preset`).
 - Your settings in `config/schematic-tracker.json` are kept.
