@@ -71,6 +71,41 @@ class CoreTest {
 	}
 
 	@Test
+	void detectsCompletedItemsAndList() {
+		TrackedList list = new TrackedList("p1", "Kirche", "editor", 1, List.of(
+				item("a", "Stone", 10, 10, false, null, 0),
+				item("b", "Glass", 10, 0, false, null, 1),
+				item("c", "Sand", 10, 0, false, null, 2)));
+		Completions completions = new Completions();
+		// Erstes Laden: schon fertige Materialien melden sich nicht
+		assertTrue(completions.update(list).isEmpty());
+
+		list.replace(item("b", "Glass", 10, 10, false, null, 1));
+		Completions.Update u = completions.update(list);
+		assertEquals(List.of("b"), u.completed().stream().map(TrackedItem::id).toList());
+		assertFalse(u.listDone());
+		assertTrue(completions.update(list).isEmpty()); // nur einmal
+
+		// Wieder weniger, dann erneut voll: meldet sich wieder
+		list.replace(item("b", "Glass", 10, 5, false, null, 1));
+		assertTrue(completions.update(list).isEmpty());
+		list.replace(item("b", "Glass", 10, 10, false, null, 1));
+		assertEquals(1, completions.update(list).completed().size());
+
+		// Letztes Material (als gefarmt markiert) → Liste fertig
+		list.replace(item("c", "Sand", 10, 3, true, null, 2));
+		u = completions.update(list);
+		assertEquals(1, u.completed().size());
+		assertTrue(u.listDone());
+		assertFalse(completions.update(list).listDone());
+
+		// Andere Liste: nur merken
+		TrackedList other = new TrackedList("p2", "Turm", "editor", 1, List.of(item("x", "Stone", 1, 1, false, null, 0)));
+		assertTrue(completions.update(other).isEmpty());
+		assertTrue(completions.update(null).isEmpty());
+	}
+
+	@Test
 	void convertsUnits() {
 		assertEquals(40.75, Amounts.inUnit(70416, 64, Amounts.Unit.SHULKER), 0.01);
 		assertEquals(2.0, Amounts.inUnit(128, 64, Amounts.Unit.STACKS), 1e-9);

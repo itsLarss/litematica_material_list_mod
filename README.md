@@ -13,8 +13,11 @@ in the style of the Litematica material list, and keeps it in sync with the webs
   the website: `3sb 5st`, `2dc`, `+64`, `-1st`) or use the *+1 st / SB / DC* buttons. Or by command:
   `/tracker add <item> <amount>` adds, `/tracker set <item> <amount>` corrects. `hand` stands for the item in
   your hand. Changes are saved after a short pause and show up on the website like any other edit.
+- **Done notifications:** a toast and a sound when a material is complete (yours or a friend's), and confetti when
+  the whole list is done. Each can be turned off in the settings; *Preview* shows how it looks.
 - **Settings** via Mod Menu, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
-  unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name.
+  unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
+  done message, sound and confetti.
 - English and German, following the game language.
 - Client only; works on any server. Doesn't need Litematica.
 

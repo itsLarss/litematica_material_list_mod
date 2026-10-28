@@ -68,6 +68,7 @@ public final class SchematicTrackerClient {
 		boolean listOpen = screen instanceof TrackerListScreen;
 		boolean active = listOpen || (mc.level != null && !mc.isPaused() && config.hudVisible);
 		sync.tick(System.currentTimeMillis(), active);
+		Notifications.tick(mc, sync.list());
 	}
 
 	public static TrackerConfig config() {

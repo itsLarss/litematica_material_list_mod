@@ -37,6 +37,8 @@ public final class TrackerHud {
 		Minecraft mc = Minecraft.getInstance();
 		TrackerConfig config = SchematicTrackerClient.config();
 		ListSync sync = SchematicTrackerClient.sync();
+		// Konfetti auch bei ausgeblendetem HUD; in der ganzen Liste zeichnet es der Bildschirm selbst
+		if (!(Compat.screen(mc) instanceof TrackerListScreen)) Notifications.renderConfetti(g);
 		if (!config.hudVisible || !config.linked() || mc.getDebugOverlay().showDebugScreen()) return;
 		Screen screen = Compat.screen(mc);
 		if (screen instanceof TrackerListScreen || (config.hideInMenus && screen != null)) return;

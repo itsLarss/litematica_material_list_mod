@@ -94,5 +94,14 @@
   "schematic-tracker.cmd.amount_invalid": "Didn't understand “%s”. Examples: 3sb 5st, 2dc, +64, -1st",
   "schematic-tracker.cmd.item_unknown": "No material “%s” in the list.",
   "schematic-tracker.cmd.item_ambiguous": "“%s” matches several materials: %s",
-  "schematic-tracker.cmd.hand_empty": "You aren't holding anything."
+  "schematic-tracker.cmd.hand_empty": "You aren't holding anything.",
+
+  "schematic-tracker.notify.item_done": "Material done!",
+  "schematic-tracker.notify.items_done": "%s materials done!",
+  "schematic-tracker.notify.list_done": "List complete!",
+  "schematic-tracker.notify.preview": "This is how it looks.",
+  "schematic-tracker.config.notify_toast": "Done message",
+  "schematic-tracker.config.notify_sound": "Done sound",
+  "schematic-tracker.config.notify_confetti": "Confetti",
+  "schematic-tracker.config.notify_preview": "Preview"
 }
