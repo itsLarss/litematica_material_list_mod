@@ -9,6 +9,10 @@ in the style of the Litematica material list, and keeps it in sync with the webs
 - **Live:** changes from the website or from friends appear within a few seconds.
 - **Full list** (default key `K`): scroll through everything, click a material to claim it ("I'll collect this")
   or release it. The website shows it right away.
+- **Enter amounts in game:** right-click a material in the full list, then type an amount (same quick input as on
+  the website: `3sb 5st`, `2dc`, `+64`, `-1st`) or use the *+1 st / SB / DC* buttons. Or by command:
+  `/tracker add <item> <amount>` adds, `/tracker set <item> <amount>` corrects. `hand` stands for the item in
+  your hand. Changes are saved after a short pause and show up on the website like any other edit.
 - **Settings** via Mod Menu, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
   unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name.
 - English and German, following the game language.
@@ -53,6 +57,8 @@ Instead of a code you can also paste a share link: `/tracker link https://<websi
 | `/tracker hud [on\|off]`             | Show/hide the HUD (default key `J`)       |
 | `/tracker filter <open\|mine\|all>`  | What the HUD shows                        |
 | `/tracker sort <missing\|name\|list>`| Order                                     |
+| `/tracker add <item> <amount>`       | Add to the amount (`/tracker add stone 3sb`, `/tracker add hand 64`) |
+| `/tracker set <item> <amount>`       | Correct the amount (`/tracker set glass 2dc 5st`) |
 | `/tracker list`                      | Full list (default key `K`)               |
 | `/tracker config`                    | Settings                                  |
 

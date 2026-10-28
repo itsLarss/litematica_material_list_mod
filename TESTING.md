@@ -1,6 +1,6 @@
 # Teststatus
 
-Stand der Version `0.2.0` (Umbau auf eine Codebasis, noch ohne neue Funktionen).
+Stand der Version `0.2.0` (Umbau auf eine Codebasis, dazu neue Funktionen aus Schritt 3).
 
 - **gebaut** = kompiliert, Jar erzeugt (lokal bzw. in GitHub Actions)
 - **im Spiel getestet** = mit `runClient` oder echtem Launcher gestartet und die Checkliste unten durchgeklickt.
@@ -56,3 +56,14 @@ Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
    und `/tracker config`. Ecke, Zeilen, Größe, Hintergrund ändern → HUD passt sich an. Neustart → Einstellungen bleiben.
 8. Spielsprache Deutsch ↔ Englisch: Texte und Item-Namen wechseln.
 9. Tastenbelegung: Kategorie „Schematic Tracker“ mit beiden Tasten vorhanden.
+
+### Neu: Mengen eintragen (Feature 1)
+
+10. `K` → Rechtsklick auf ein Material → Zeile wird orange markiert, darunter Name und `Menge / Soll` plus Eingabefeld.
+11. `+1 St`, `+1 SB`, `+1 DK` → Menge steigt sofort um 64 / 1728 / 3456 (bei 64er-Items); Meldung unten.
+12. Feld: `3sb 5st` + Enter setzt, `+64` addiert, `-1st` zieht ab, Unsinn (`abc`) → rote Meldung.
+13. Nach ca. 1 s steht die neue Menge auf der Website (Verlauf zeigt den eigenen Namen).
+14. Esc schließt erst das Eingabefeld, zweites Esc die Liste. Linksklick setzt weiter „Ich sammle das“.
+15. `/tracker add stone 3sb`, `/tracker set stone 100`, `/tracker add hand 64` (Item in der Hand),
+    Tab-Vervollständigung schlägt die IDs der Liste vor. Unbekanntes Item / mehrdeutig → verständliche Meldung.
+16. Mit Nur-Ansehen-Link: Rechtsklick tut nichts, Befehle melden „Nur-Ansehen-Link“.

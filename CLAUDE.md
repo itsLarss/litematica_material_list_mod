@@ -24,11 +24,16 @@ Litematica und funktioniert auf jedem Server.
   sichtbar ist und das Spiel nicht pausiert.
 - **Ganze Liste** (Taste **K**): scrollen, Filter Offen/Meine/Alle, Sortierung, Klick = „Ich sammle das“ setzen
   bzw. freigeben, Tooltip mit Menge und wer sammelt.
+- **Mengen eintragen:** Rechtsklick in der ganzen Liste → Feld mit Schnelleingabe wie auf der Website
+  (`core/QuickAmount`, gleiche Fälle wie `tests/features.test.ts` der Website) und Knöpfe +1 St/SB/DK.
+  `/tracker add <item> <menge>` addiert, `/tracker set <item> <menge>` setzt; `<item>` = ID ohne `minecraft:`,
+  Name (in Anführungszeichen, wenn mit Leerzeichen) oder `hand`. Gespeichert wird gesammelt nach 600 ms
+  (`ListSync.setHave`), eigene Eingaben haben Vorrang vor Abrufen, bis der Server sie bestätigt hat.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
   eigener Name für „Meine“.
 - **Befehle:** `/tracker` (Status), `link`, `unlink`, `server`, `status`, `refresh`, `hud [on|off]`,
-  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`.
+  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`, `add <item> <menge>`, `set <item> <menge>`.
 - **Sprachen:** Englisch und Deutsch (`en_us.json`, `de_de.json`), richtet sich nach der Spielsprache.
 
 ---
@@ -230,6 +235,5 @@ Neue Minecraft-Version hinzufügen:
 ## 7. Offene Punkte / Ideen
 
 - **Standard-Website-Adresse** eintragen, sobald die Domain feststeht (dann entfällt `/tracker server`).
-- **Mengen in der Mod eintragen:** Zahlenfeld mit Schnelleingabe und Knöpfen (+1 Stack/SB/DK), „Aus Inventar zählen“,
-  `/tracker add <item> <menge>` / `/tracker set …`. Die Website-API kann das schon (`PATCH /api/v1/list/items`).
+- **„Aus Inventar zählen“** (Menge aus dem eigenen Inventar übernehmen) – noch nicht gebaut.
 - 26.2 im Spiel testen (bisher nur gebaut).

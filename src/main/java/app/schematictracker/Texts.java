@@ -46,4 +46,13 @@ public final class Texts {
 		String label = Component.translatable("schematic-tracker.unit." + unit.name().toLowerCase(Locale.ROOT)).getString();
 		return String.format(locale(), "%d (%.2f %s)", missing, inUnit, label);
 	}
+
+	/** Rückmeldung nach dem Eintragen: "Stone: 1200 / 5000 · noch 3800 (59,38 st)" bzw. "… fertig". */
+	public static Component amountSaved(TrackedItem item) {
+		if (item.complete()) {
+			return Component.translatable("schematic-tracker.amount.saved_done", name(item), item.have(), item.total());
+		}
+		return Component.translatable("schematic-tracker.amount.saved", name(item), item.have(), item.total(),
+				missing(item, app.schematictracker.SchematicTrackerClient.config().unit));
+	}
 }
