@@ -14,6 +14,7 @@ public final class TrackedList {
 	private String name;
 	private String role;
 	private long version;
+	private String note;
 	/** Zählt jede Änderung (Abruf oder eigene Eingabe), damit die Mod nur bei Änderungen neu auswertet */
 	private long revision;
 	private final Map<String, TrackedItem> items = new LinkedHashMap<>();
@@ -42,7 +43,7 @@ public final class TrackedList {
 			// Position bleibt erhalten: Teilantworten kommen in Listenreihenfolge, aber unvollständig.
 			int position = old != null ? old.position() : item.position();
 			items.put(item.id(), new TrackedItem(item.id(), item.name(), item.itemId(), item.total(), item.have(),
-					item.stackSize(), item.farmed(), item.claimedBy(), position));
+					item.stackSize(), item.farmed(), item.claimedBy(), position, item.note()));
 			changedAnything = true;
 		}
 		return changedAnything;
@@ -54,6 +55,19 @@ public final class TrackedList {
 			items.put(item.id(), item);
 			revision++;
 		}
+	}
+
+	/** Notiz zur ganzen Liste; null = keine, nicht freigegeben (Nur-Ansehen) oder Website ohne Notizen */
+	public String note() {
+		return note;
+	}
+
+	public boolean setNote(String note) {
+		String clean = note == null || note.isBlank() ? null : note;
+		if (java.util.Objects.equals(clean, this.note)) return false;
+		this.note = clean;
+		revision++;
+		return true;
 	}
 
 	public long revision() {

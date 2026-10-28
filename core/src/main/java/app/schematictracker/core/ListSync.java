@@ -145,10 +145,12 @@ public final class ListSync {
 			boolean changed;
 			if (list == null || !list.id().equals(res.id())) {
 				list = new TrackedList(res.id(), res.name(), res.role(), res.version(), res.items());
+				list.setNote(res.note());
 				loadedFor = key;
 				changed = true;
 			} else {
 				changed = list.apply(res.name(), res.role(), res.version(), res.partial(), res.items());
+				changed |= list.setNote(res.note());
 			}
 			pollStartedAt = pollStart;
 			applyLocalAmounts();
@@ -241,12 +243,12 @@ public final class ListSync {
 
 	private static TrackedItem withAmount(TrackedItem i, int have, boolean farmed) {
 		return new TrackedItem(i.id(), i.name(), i.itemId(), i.total(), have, i.stackSize(), farmed, i.claimedBy(),
-				i.position());
+				i.position(), i.note());
 	}
 
 	private static TrackedItem withClaim(TrackedItem i, String claimedBy) {
 		return new TrackedItem(i.id(), i.name(), i.itemId(), i.total(), i.have(), i.stackSize(), i.farmed(), claimedBy,
-				i.position());
+				i.position(), i.note());
 	}
 
 	public static int statusOf(Throwable err) {

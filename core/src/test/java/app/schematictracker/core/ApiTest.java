@@ -57,10 +57,10 @@ class ApiTest {
 				String glass = "{\"id\":\"i2\",\"name\":\"Glass\",\"itemId\":\"minecraft:glass\",\"total\":640,\"have\":" + glassHave
 						+ ",\"stackSize\":64,\"farmed\":false,\"claimedBy\":null}";
 				String stone = "{\"id\":\"i1\",\"name\":\"Stone\",\"itemId\":\"minecraft:stone\",\"total\":100,\"have\":0,"
-						+ "\"stackSize\":64,\"farmed\":false,\"claimedBy\":\"Lars\"}";
+						+ "\"stackSize\":64,\"farmed\":false,\"claimedBy\":\"Lars\",\"note\":\"im Nether holen\"}";
 				String items = partial ? (path.endsWith("since=" + version) ? "" : glass) : stone + "," + glass;
 				out = "{\"apiVersion\":1,\"id\":\"p1\",\"name\":\"Kirche\",\"role\":\"editor\",\"version\":" + version
-						+ ",\"partial\":" + partial + ",\"items\":[" + items + "]}";
+						+ ",\"partial\":" + partial + ",\"note\":\"Basis bei 120 64 -300\",\"items\":[" + items + "]}";
 			} else {
 				status = 404;
 				out = "{\"error\":\"Not found.\"}";
@@ -97,6 +97,10 @@ class ApiTest {
 		assertEquals(2, full.items().size());
 		assertEquals("minecraft:glass", full.items().get(1).itemId());
 		assertEquals("Lars", full.items().get(0).claimedBy());
+		// Notizen (später in v1 dazugekommen); Glass hat kein Feld → null wie bei älteren Websites
+		assertEquals("Basis bei 120 64 -300", full.note());
+		assertEquals("im Nether holen", full.items().get(0).note());
+		assertEquals(null, full.items().get(1).note());
 
 		api.saveAmounts(base, TOKEN, List.of(new TrackerApi.AmountChange("i2", 64, false)), "Steve").get(5, TimeUnit.SECONDS);
 		TrackerApi.ListResponse changes = api.list(base, TOKEN, 1).get(5, TimeUnit.SECONDS);
@@ -121,6 +125,8 @@ class ApiTest {
 		waitFor(() -> sync.list() != null);
 		assertEquals(ListSync.Status.OK, sync.status());
 		assertEquals(0, sync.list().item("i2").have());
+		assertEquals("Basis bei 120 64 -300", sync.list().note());
+		assertTrue(sync.list().item("i1").hasNote());
 
 		glassHave = 128;
 		version++;

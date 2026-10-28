@@ -48,6 +48,8 @@ public final class TrackerConfig {
 	public boolean notifyConfetti = true;
 	/** Zeile "Items pro Stunde / Restzeit" der Farm-Session im HUD */
 	public boolean hudSession = true;
+	/** Notizen (kurz) im HUD */
+	public boolean hudNotes = true;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

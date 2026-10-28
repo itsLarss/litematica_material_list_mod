@@ -55,4 +55,45 @@ public final class Texts {
 		return Component.translatable("schematic-tracker.amount.saved", name(item), item.have(), item.total(),
 				missing(item, app.schematictracker.SchematicTrackerClient.config().unit));
 	}
+
+	/** Notiz in einer Zeile: Zeilenumbrüche werden zu " · " */
+	public static String oneLine(String note) {
+		return note == null ? "" : note.strip().replaceAll("\\s*\\R\\s*", " · ");
+	}
+
+	/** Auf eine Breite kürzen, mit "…" am Ende */
+	public static String shorten(net.minecraft.client.gui.Font font, String text, int width) {
+		if (font.width(text) <= width) return text;
+		String dots = "…";
+		int end = text.length();
+		while (end > 0 && font.width(text.substring(0, end)) + font.width(dots) > width) end--;
+		return text.substring(0, end).stripTrailing() + dots;
+	}
+
+	/** Text auf Zeilen der Breite umbrechen; höchstens maxLines, die letzte wird bei Bedarf gekürzt */
+	public static java.util.List<String> wrap(net.minecraft.client.gui.Font font, String text, int width, int maxLines) {
+		java.util.List<String> lines = new java.util.ArrayList<>();
+		for (String paragraph : text.strip().split("\\R")) {
+			StringBuilder line = new StringBuilder();
+			for (String word : paragraph.trim().split("\\s+")) {
+				String next = line.isEmpty() ? word : line + " " + word;
+				if (font.width(next) <= width || line.isEmpty()) {
+					line.setLength(0);
+					line.append(next);
+				} else {
+					lines.add(line.toString());
+					line.setLength(0);
+					line.append(word);
+				}
+			}
+			lines.add(line.toString());
+		}
+		if (lines.size() > maxLines) {
+			java.util.List<String> cut = new java.util.ArrayList<>(lines.subList(0, maxLines));
+			cut.set(maxLines - 1, shorten(font, cut.get(maxLines - 1) + " …", width));
+			lines = cut;
+		}
+		lines.replaceAll(l -> shorten(font, l, width));
+		return lines;
+	}
 }

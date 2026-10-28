@@ -121,6 +121,9 @@ public final class TrackerConfigScreen extends CompatScreen {
 				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.hud_session"), (b, v) -> c.hudSession = v));
 		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.restart_session"),
 				b -> SchematicTrackerClient.restartSession(minecraft)).bounds(right, y, w, 20).build());
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudNotes)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.hud_notes"), (b, v) -> c.hudNotes = v));
 		y += 26;
 
 		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
