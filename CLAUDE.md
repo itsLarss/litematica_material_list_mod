@@ -172,7 +172,7 @@ Auf NeoForge ab 1.21.9 die Tasten-Kategorie **nicht** über `KeyMapping.Category
 „already registered“), sondern über `RegisterKeyMappingsEvent#registerCategory` (siehe `Compat`).
 
 Eine andere Version aktiv schalten (z. B. zum Bearbeiten in der IDE): `./gradlew "Set active project to 1.21.4-fabric"`.
-**Vor dem Commit wieder auf `26.3-fabric` schalten**, sonst ändert sich jede Datei mit Bedingungen.
+**Vor dem Commit mit `./gradlew "Reset active project"` zurück auf `26.3-fabric`**, sonst ändert sich jede Datei mit Bedingungen.
 
 Neue Minecraft-Version hinzufügen:
 1. In `settings.gradle.kts` eintragen (`mc("26.4", "fabric", "neoforge")`), Abschnitte in
