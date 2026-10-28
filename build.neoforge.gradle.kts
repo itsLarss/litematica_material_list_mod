@@ -77,7 +77,7 @@ java {
 	targetCompatibility = JavaVersion.toVersion(javaVersion)
 }
 
-// Release-Vorbereitung für Modrinth (und optional CurseForge). Nur Trockenlauf, es wird nie hochgeladen.
+// Release-Vorbereitung für Modrinth. Nur Trockenlauf, es wird nie hochgeladen.
 val mcReleases = sc.properties.rawOrNull("mod", "mc_releases")?.asList().orEmpty().map { it.toString() }
 
 publishMods {
@@ -90,17 +90,8 @@ publishMods {
 	dryRun = true
 
 	modrinth {
-		projectId = (findProperty("publish.modrinth") as String?).orEmpty().ifBlank { "schematic-tracker" }
+		projectId = property("publish.modrinth") as String
 		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
 		minecraftVersions.addAll(mcReleases)
-	}
-
-	if ((findProperty("publish.curseforge") as String?).orEmpty().isNotBlank()) curseforge {
-		projectId = findProperty("publish.curseforge") as String
-		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-		minecraftVersions.addAll(mcReleases)
-		client = true
-		server = false
-		javaVersions.add(JavaVersion.toVersion(javaVersion))
 	}
 }

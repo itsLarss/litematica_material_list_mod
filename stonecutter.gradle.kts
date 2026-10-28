@@ -38,6 +38,6 @@ tasks.register("buildAll") {
 // Lädt nichts hoch: dryRun ist in den Build-Skripten fest eingeschaltet.
 tasks.register("publishDryRun") {
 	group = "publishing"
-	description = "Prepares every Modrinth/CurseForge upload without publishing anything"
+	description = "Prepares every Modrinth upload without publishing anything"
 	dependsOn(stonecutter.tasks.named("publishMods"))
 }

@@ -85,7 +85,7 @@ auf Fabric `schematic-tracker`. Sprachdateien, Config-Datei und Texte sind gleic
 ./gradlew :1.21.4-neoforge:build           # eine Kombination → versions/1.21.4-neoforge/build/libs/
 ./gradlew :core:test                       # nur die Unit-Tests
 ./gradlew :26.3-fabric:runClient           # Minecraft mit der Mod starten (Ordner run/26.3-fabric/)
-./gradlew publishDryRun                    # Modrinth-/CurseForge-Trockenlauf, lädt NICHTS hoch
+./gradlew publishDryRun                    # Modrinth-Trockenlauf, lädt NICHTS hoch
 ```
 
 ### Jars von GitHub holen
@@ -209,6 +209,7 @@ Neue Minecraft-Version hinzufügen:
 - Neue Logik möglichst in `core/` (ohne Minecraft) mit JUnit-Test.
 - Versionsunterschiede nur über Stonecutter-Bedingungen in `compat/` bzw. den Loader-Schichten, kein Copy-Paste.
 - Modrinth-Texte (Beschreibung, Changelogs): Englisch, ohne Emojis.
+- Veröffentlicht wird **nur auf Modrinth**, nicht auf CurseForge (bewusste Entscheidung).
 
 ### Modrinth
 
