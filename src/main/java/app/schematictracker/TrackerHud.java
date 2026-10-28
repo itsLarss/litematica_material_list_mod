@@ -2,6 +2,7 @@ package app.schematictracker;
 
 import app.schematictracker.compat.Compat;
 import app.schematictracker.compat.Gfx;
+import app.schematictracker.core.Deadline;
 import app.schematictracker.core.FarmSession;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.ListView;
@@ -73,6 +74,10 @@ public final class TrackerHud {
 			}
 		}
 
+		// Deadline (nur wenn gesetzt; Status nur, wenn die Website ihn liefert)
+		Deadline deadline = config.hudDeadline && list != null ? list.deadline() : null;
+		String deadlineText = deadline == null ? null : Texts.deadlineLine(deadline, false);
+
 		// Notizen (nur mit Mitbearbeiten-Link und neuerer Website; sonst null und still ausgeblendet)
 		String listNote = config.hudNotes && list != null && list.note() != null
 				? Texts.shorten(font, "✎ " + Texts.oneLine(list.note()), NOTE_WIDTH * 2) : null;
@@ -114,7 +119,8 @@ public final class TrackerHud {
 				Math.max(emptyText == null ? 0 : font.width(emptyText), more == null ? 0 : font.width(more))));
 		if (session != null) width = Math.max(width, PAD * 2 + font.width(session));
 		if (listNote != null) width = Math.max(width, PAD * 2 + font.width(listNote));
-		int height = PAD + TITLE + (listNote != null ? 11 : 0) + shown.size() * ROW + (emptyText != null ? 11 : 0) + (more != null ? 11 : 0)
+		if (deadlineText != null) width = Math.max(width, PAD * 2 + font.width(deadlineText));
+		int height = PAD + TITLE + (deadlineText != null ? 11 : 0) + (listNote != null ? 11 : 0) + shown.size() * ROW + (emptyText != null ? 11 : 0) + (more != null ? 11 : 0)
 				+ (session != null ? 11 : 0) + PAD - 2;
 
 		float scale = config.scale / 100f;
@@ -144,6 +150,10 @@ public final class TrackerHud {
 		}
 		if (!filterHint.isEmpty()) g.text(font, filterHint, x + width - PAD - font.width(filterHint), cy, GRAY);
 		cy += TITLE;
+		if (deadlineText != null) {
+			g.text(font, deadlineText, x + PAD, cy, Texts.deadlineColor(deadline));
+			cy += 11;
+		}
 		if (listNote != null) {
 			g.text(font, listNote, x + PAD, cy, GRAY);
 			cy += 11;

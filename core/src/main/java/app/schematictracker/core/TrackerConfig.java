@@ -54,6 +54,8 @@ public final class TrackerConfig {
 	public boolean hudClaims = true;
 	/** Namen farbig statt grau */
 	public boolean claimColors = true;
+	/** Deadline der Liste im HUD */
+	public boolean hudDeadline = true;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

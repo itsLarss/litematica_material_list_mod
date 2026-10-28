@@ -13,4 +13,5 @@
 - Notes from the website: short in the HUD, in full in the list (`K`). Only with a co-edit connection.
 - Who collects what: other players' claims in the HUD, names in color (optional).
 - Settings split into two pages so everything fits at large GUI scales.
+- Deadline of the list in the HUD and the full list, with the website's on-track status where available.
 - Your settings in `config/schematic-tracker.json` are kept.

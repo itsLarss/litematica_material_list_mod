@@ -107,4 +107,44 @@ public final class Texts {
 		int hash = name.trim().toLowerCase(Locale.ROOT).hashCode();
 		return NAME_COLORS[Math.floorMod(hash, NAME_COLORS.length)];
 	}
+
+	/** "24.12.2026" bzw. "Dec 24, 2026" in der Spielsprache; unlesbares Datum bleibt wie geliefert */
+	public static String day(String isoDate) {
+		try {
+			return java.time.LocalDate.parse(isoDate).format(
+					java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM).withLocale(locale()));
+		} catch (RuntimeException e) {
+			return isoDate;
+		}
+	}
+
+	/**
+	 * "⌛ 24.12.2026 · noch 57 Tage · Knapp". Ohne Status von der Website nur das Datum (die Mod rechnet nicht selbst).
+	 * withForecast hängt "· fertig ca. …" an, wenn die Website eine Prognose liefert.
+	 */
+	public static String deadlineLine(app.schematictracker.core.Deadline d, boolean withForecast) {
+		StringBuilder line = new StringBuilder("⌛ ").append(day(d.date()));
+		if (d.daysLeft() != null && !"done".equals(d.status())) {
+			int days = d.daysLeft();
+			String key = days > 1 ? "days_left" : days == 1 ? "day_left" : days == 0 ? "today" : "days_over";
+			line.append(" · ").append(Component.translatable("schematic-tracker.deadline." + key, Math.abs(days)).getString());
+		}
+		if (d.hasStatus()) {
+			line.append(" · ").append(Component.translatable("schematic-tracker.deadline.status." + d.status()).getString());
+		}
+		if (withForecast && d.forecast() != null && !"done".equals(d.status())) {
+			line.append(" · ").append(Component.translatable("schematic-tracker.deadline.forecast", day(d.forecast())).getString());
+		}
+		return line.toString();
+	}
+
+	public static int deadlineColor(app.schematictracker.core.Deadline d) {
+		if (d.status() == null) return 0xFFAAAAAA;
+		return switch (d.status()) {
+			case "onTrack", "done" -> 0xFF55FF55;
+			case "tight" -> 0xFFFFFF55;
+			case "behind", "overdue" -> 0xFFFF5555;
+			default -> 0xFFAAAAAA;
+		};
+	}
 }

@@ -22,6 +22,8 @@ in the style of the Litematica material list, and keeps it in sync with the webs
   full in the list (`K`, hover a material). Read only; only with a co-edit connection, never via view-only links.
 - **Who collects what:** other players' claims appear next to the amount in the HUD, each name in its own color
   (can be turned off or shown in gray).
+- **Deadline:** the list's target date from the website in the HUD and the full list, with "on track / tight /
+  behind" once the website provides it. The mod only displays what the website calculates.
 - **Settings** (two pages) via Mod Menu, the NeoForge mod list, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
   unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
   done message, sound and confetti.

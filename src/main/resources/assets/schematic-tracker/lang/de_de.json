@@ -126,5 +126,18 @@
   "schematic-tracker.config.hud_claims": "Wer sammelt was",
   "schematic-tracker.config.claim_colors": "Namen farbig",
   "schematic-tracker.config.more": "Weitere Einstellungen…",
-  "schematic-tracker.config.back": "‹ Zurück"
+  "schematic-tracker.config.back": "‹ Zurück",
+
+  "schematic-tracker.deadline.days_left": "noch %s Tage",
+  "schematic-tracker.deadline.day_left": "noch 1 Tag",
+  "schematic-tracker.deadline.today": "heute",
+  "schematic-tracker.deadline.days_over": "seit %s Tagen vorbei",
+  "schematic-tracker.deadline.forecast": "fertig ca. %s",
+  "schematic-tracker.deadline.status.onTrack": "Im Plan",
+  "schematic-tracker.deadline.status.tight": "Knapp",
+  "schematic-tracker.deadline.status.behind": "Im Rückstand",
+  "schematic-tracker.deadline.status.done": "Fertig",
+  "schematic-tracker.deadline.status.overdue": "Überfällig",
+  "schematic-tracker.deadline.status.unknown": "Noch zu wenig Daten",
+  "schematic-tracker.config.hud_deadline": "Deadline im HUD"
 }

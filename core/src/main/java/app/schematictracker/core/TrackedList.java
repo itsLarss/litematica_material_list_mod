@@ -15,6 +15,7 @@ public final class TrackedList {
 	private String role;
 	private long version;
 	private String note;
+	private Deadline deadline;
 	/** Zählt jede Änderung (Abruf oder eigene Eingabe), damit die Mod nur bei Änderungen neu auswertet */
 	private long revision;
 	private final Map<String, TrackedItem> items = new LinkedHashMap<>();
@@ -66,6 +67,18 @@ public final class TrackedList {
 		String clean = note == null || note.isBlank() ? null : note;
 		if (java.util.Objects.equals(clean, this.note)) return false;
 		this.note = clean;
+		revision++;
+		return true;
+	}
+
+	/** Deadline der Liste; null = keine gesetzt oder Website ohne Deadline */
+	public Deadline deadline() {
+		return deadline;
+	}
+
+	public boolean setDeadline(Deadline deadline) {
+		if (java.util.Objects.equals(deadline, this.deadline)) return false;
+		this.deadline = deadline;
 		revision++;
 		return true;
 	}

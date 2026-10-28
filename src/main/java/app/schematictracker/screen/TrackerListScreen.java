@@ -218,7 +218,11 @@ public final class TrackerListScreen extends CompatScreen {
 		Component heading = list == null
 				? title
 				: Component.literal(String.format(Texts.locale(), "%s · %.0f %%", list.name(), Math.floor(list.percent())));
-		g.centered(font, heading, width / 2, 12, 0xFFFFFFFF);
+		g.centered(font, heading, width / 2, list != null && list.deadline() != null ? 6 : 12, 0xFFFFFFFF);
+		if (list != null && list.deadline() != null) {
+			g.centered(font, Component.literal(Texts.deadlineLine(list.deadline(), true)), width / 2, 17,
+					Texts.deadlineColor(list.deadline()));
+		}
 
 		if (!c.linked() || list == null) {
 			String key = !c.linked() ? "schematic-tracker.config.not_linked"

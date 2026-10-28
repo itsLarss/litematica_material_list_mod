@@ -146,11 +146,13 @@ public final class ListSync {
 			if (list == null || !list.id().equals(res.id())) {
 				list = new TrackedList(res.id(), res.name(), res.role(), res.version(), res.items());
 				list.setNote(res.note());
+				list.setDeadline(res.deadline());
 				loadedFor = key;
 				changed = true;
 			} else {
 				changed = list.apply(res.name(), res.role(), res.version(), res.partial(), res.items());
 				changed |= list.setNote(res.note());
+				changed |= list.setDeadline(res.deadline());
 			}
 			pollStartedAt = pollStart;
 			applyLocalAmounts();
