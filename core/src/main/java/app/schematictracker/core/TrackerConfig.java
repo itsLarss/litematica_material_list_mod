@@ -40,6 +40,13 @@ public final class TrackerConfig {
 	/** HUD ausblenden, solange Chat oder ein anderes Menü offen ist */
 	public boolean hideInMenus = true;
 
+	/** Meldung oben rechts, wenn ein Material oder die Liste fertig wird */
+	public boolean notifyToast = true;
+	/** Ton dazu */
+	public boolean notifySound = true;
+	/** Konfetti, wenn die ganze Liste fertig ist */
+	public boolean notifyConfetti = true;
+
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public boolean linked() {

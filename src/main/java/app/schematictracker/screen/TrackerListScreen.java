@@ -1,5 +1,6 @@
 package app.schematictracker.screen;
 
+import app.schematictracker.Notifications;
 import app.schematictracker.SchematicTrackerClient;
 import app.schematictracker.Texts;
 import app.schematictracker.compat.Compat;
@@ -188,6 +189,11 @@ public final class TrackerListScreen extends CompatScreen {
 
 	@Override
 	protected void draw(Gfx g, int mouseX, int mouseY, float delta) {
+		drawList(g, mouseX, mouseY);
+		Notifications.renderConfetti(g);
+	}
+
+	private void drawList(Gfx g, int mouseX, int mouseY) {
 		TrackerConfig c = SchematicTrackerClient.config();
 		ListSync sync = SchematicTrackerClient.sync();
 		TrackedList list = sync.list();

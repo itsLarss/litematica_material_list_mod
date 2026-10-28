@@ -6,4 +6,6 @@
 - Enter amounts in game: right-click a material in the full list (quick input like `3sb 5st`, `+64`, or the
   +1 stack / shulker box / double chest buttons), or use `/tracker add <item> <amount>` and
   `/tracker set <item> <amount>` (`hand` = the item in your hand).
+- Done notifications: a toast and a sound when a material is complete, confetti when the whole list is done.
+  Each can be turned off in the settings.
 - Your settings in `config/schematic-tracker.json` are kept.

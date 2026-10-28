@@ -67,3 +67,15 @@ Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
 15. `/tracker add stone 3sb`, `/tracker set stone 100`, `/tracker add hand 64` (Item in der Hand),
     Tab-Vervollständigung schlägt die IDs der Liste vor. Unbekanntes Item / mehrdeutig → verständliche Meldung.
 16. Mit Nur-Ansehen-Link: Rechtsklick tut nichts, Befehle melden „Nur-Ansehen-Link“.
+
+Rückmeldung 28.10.: Feature 1 funktioniert im Spiel (welche Kombinationen, wurde nicht notiert – bitte in der
+Tabelle oben nachtragen).
+
+### Neu: Fertig-Meldungen (Feature 2)
+
+17. Einstellungen → „Vorschau“: Toast „Liste fertig!“, Ton und Konfetti über den Bildschirm (ca. 4 s).
+18. Ein Material voll eintragen (im Spiel oder auf der Website) → Toast „Material fertig!“ mit Namen + Ton.
+19. Mehrere auf einmal fertig (Website: „Alle fertigen als gefarmt markieren“) → **ein** Toast „N Materialien fertig!“.
+20. Letztes Material fertig → Toast „Liste fertig!“, Ton, Konfetti (auch bei ausgeblendetem HUD und in der Liste K).
+21. Fertig-Meldung / Fertig-Ton / Konfetti einzeln ausschalten → jeweils nur das fällt weg.
+22. Beim Verbinden oder Neustart mit schon fertigen Materialien: keine Meldung.

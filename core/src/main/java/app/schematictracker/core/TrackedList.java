@@ -14,6 +14,8 @@ public final class TrackedList {
 	private String name;
 	private String role;
 	private long version;
+	/** Zählt jede Änderung (Abruf oder eigene Eingabe), damit die Mod nur bei Änderungen neu auswertet */
+	private long revision;
 	private final Map<String, TrackedItem> items = new LinkedHashMap<>();
 
 	public TrackedList(String id, String name, String role, long version, List<TrackedItem> items) {
@@ -26,6 +28,7 @@ public final class TrackedList {
 
 	/** Übernimmt eine Antwort von GET /api/v1/list; gibt zurück, ob sich etwas geändert hat. */
 	public boolean apply(String name, String role, long version, boolean partial, List<TrackedItem> changed) {
+		revision++;
 		boolean changedAnything = version != this.version || !name.equals(this.name);
 		this.name = name;
 		this.role = role;
@@ -47,7 +50,14 @@ public final class TrackedList {
 
 	/** Ändert ein Material lokal (z. B. nach einem eigenen Klick), bevor der Server antwortet. */
 	public void replace(TrackedItem item) {
-		if (items.containsKey(item.id())) items.put(item.id(), item);
+		if (items.containsKey(item.id())) {
+			items.put(item.id(), item);
+			revision++;
+		}
+	}
+
+	public long revision() {
+		return revision;
 	}
 
 	public String id() {

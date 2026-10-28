@@ -1,5 +1,6 @@
 package app.schematictracker.screen;
 
+import app.schematictracker.Notifications;
 import app.schematictracker.SchematicTrackerClient;
 import app.schematictracker.TrackerCommands;
 import app.schematictracker.compat.Compat;
@@ -102,6 +103,19 @@ public final class TrackerConfigScreen extends CompatScreen {
 		playerName.setValue(c.playerName);
 		playerName.setHint(Component.translatable("schematic-tracker.config.player_hint", minecraft.getUser().getName()));
 		addRenderableWidget(playerName);
+		y += 22;
+
+		// Fertig-Meldungen
+		addRenderableWidget(CycleButton.onOffBuilder(c.notifyToast)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.notify_toast"), (b, v) -> c.notifyToast = v));
+		addRenderableWidget(CycleButton.onOffBuilder(c.notifySound)
+				.create(right, y, w, 20, Component.translatable("schematic-tracker.config.notify_sound"), (b, v) -> c.notifySound = v));
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.notifyConfetti)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.notify_confetti"),
+						(b, v) -> c.notifyConfetti = v));
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.notify_preview"),
+				b -> Notifications.preview(minecraft)).bounds(right, y, w, 20).build());
 		y += 26;
 
 		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
@@ -149,6 +163,7 @@ public final class TrackerConfigScreen extends CompatScreen {
 
 	@Override
 	protected void draw(Gfx g, int mouseX, int mouseY, float delta) {
+		Notifications.renderConfetti(g);
 		g.centered(font, title, width / 2, 8, 0xFFFFFFFF);
 		TrackerConfig c = config();
 		Component state;
