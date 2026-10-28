@@ -98,7 +98,7 @@ The build uses [Stonecutter](https://stonecutter.kikugie.dev/): every combinatio
 
 The code in `src/main/` is always written for the active version (`26.3-fabric`); Stonecutter comments out the
 parts for other versions. To work on another version, switch with `./gradlew "Set active project to 1.21.4-fabric"`
-and switch back to `26.3-fabric` before committing.
+and switch back with `./gradlew "Reset active project"` before committing.
 
 The website API is documented in the website repo (`docs/api-v1.md`).
 
