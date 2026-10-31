@@ -81,21 +81,31 @@ java {
 	targetCompatibility = JavaVersion.toVersion(javaVersion)
 }
 
-// Release-Vorbereitung für Modrinth. Nur Trockenlauf, es wird nie hochgeladen.
+// Release auf Modrinth. Standard ist der Trockenlauf; echt hochgeladen wird nur mit -Ppublish.live=true
+// (setzt der Release-Workflow auf GitHub) und dem Token in MODRINTH_TOKEN.
 val mcReleases = sc.properties.rawOrNull("mod", "mc_releases")?.asList().orEmpty().map { it.toString() }
 
 publishMods {
 	file = tasks.jar.flatMap { it.archiveFile }
 	version = modVersion
 	displayName = "Schematic Tracker $release for NeoForge ${mcReleases.first()}${if (mcReleases.size > 1) "–" + mcReleases.last() else ""}"
-	changelog = providers.provider { rootProject.file("CHANGELOG.md").readText() }
+	changelog = providers.provider { changelogFor(release) }
 	type = STABLE
 	modLoaders.add("neoforge")
-	dryRun = true
+	dryRun = findProperty("publish.live") != "true"
 
 	modrinth {
 		projectId = property("publish.modrinth") as String
 		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
 		minecraftVersions.addAll(mcReleases)
 	}
+}
+
+/** Nur der Abschnitt "## <version>" aus CHANGELOG.md (ohne Überschrift); leer, wenn es ihn nicht gibt */
+fun changelogFor(version: String): String {
+	val lines = rootProject.file("CHANGELOG.md").readLines()
+	val start = lines.indexOfFirst { it.trim() == "## $version" }
+	if (start < 0) return ""
+	val end = (start + 1 until lines.size).firstOrNull { lines[it].startsWith("## ") } ?: lines.size
+	return lines.subList(start + 1, end).joinToString("\n").trim()
 }
