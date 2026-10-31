@@ -214,7 +214,7 @@ public final class TrackerConfigScreen extends CompatScreen {
 	/** Server aus dem Feld übernehmen; ein anderer Server trennt die alte Verbindung. */
 	private void applyServer() {
 		String value = server.getValue().trim();
-		String normalized = value.isEmpty() ? "" : TrackerLink.normalizeServer(value);
+		String normalized = value.isEmpty() ? TrackerConfig.DEFAULT_SERVER : TrackerLink.normalizeServer(value);
 		if (normalized == null) return;
 		if (!normalized.equals(config().server)) {
 			config().unlink();

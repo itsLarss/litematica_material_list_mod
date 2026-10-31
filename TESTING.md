@@ -2,37 +2,40 @@
 
 Stand der Version `0.2.0` (Umbau auf eine Codebasis, dazu neue Funktionen aus Schritt 3).
 
+Rückmeldung 31.10.: Jede Kombination einmal im Spiel gegen die eigene Website durchgetestet, alles lief.
+Die Voreinstellung der Website-Adresse (`schematictracker.app`) kam danach dazu und ist noch nicht im Spiel geprüft.
+
 - **gebaut** = kompiliert, Jar erzeugt (lokal bzw. in GitHub Actions)
 - **im Spiel getestet** = mit `runClient` oder echtem Launcher gestartet und die Checkliste unten durchgeklickt.
   Nur eintragen, wenn das wirklich passiert ist. Kompiliert ist **nicht** getestet.
 
 | Kombination      | gebaut | im Spiel getestet | Anmerkung |
 | ---------------- | ------ | ----------------- | --------- |
-| 1.21-fabric | ja (lokal) | nein              | gilt für 1.21 und 1.21.1 |
-| 1.21-neoforge | ja (lokal) | nein              |           |
-| 1.21.1-neoforge | ja (lokal) | nein              |           |
-| 1.21.2-fabric | ja (lokal) | nein              |           |
-| 1.21.3-fabric | ja (lokal) | nein              |           |
-| 1.21.3-neoforge | ja (lokal) | nein              |           |
-| 1.21.4-fabric | ja (lokal) | nein              |           |
-| 1.21.4-neoforge | ja (lokal) | nein              |           |
-| 1.21.5-fabric | ja (lokal) | nein              |           |
-| 1.21.5-neoforge | ja (lokal) | nein              | startet bis zum Titelbildschirm ohne Ladefehler (28.10.) |
-| 1.21.6-fabric | ja (lokal) | nein              |           |
-| 1.21.7-fabric | ja (lokal) | nein              |           |
-| 1.21.8-fabric | ja (lokal) | nein              |           |
-| 1.21.8-neoforge | ja (lokal) | nein              |           |
-| 1.21.9-fabric | ja (lokal) | nein              |           |
-| 1.21.10-fabric | ja (lokal) | nein              |           |
-| 1.21.10-neoforge | ja (lokal) | nein              |           |
-| 1.21.11-fabric | ja (lokal) | nein              |           |
-| 1.21.11-neoforge | ja (lokal) | nein              |           |
-| 26.1-fabric | ja (lokal) | nein              | gilt für 26.1 – 26.1.2 |
-| 26.1-neoforge | ja (lokal) | nein              | nur 26.1.2 |
-| 26.2-fabric | ja (lokal) | nein              | auch vor dem Umbau nur gebaut |
-| 26.2-neoforge | ja (lokal) | nein              |           |
-| 26.3-fabric | ja (lokal) | nein              |           |
-| 26.3-neoforge | ja (lokal) | nein              | startet bis zum Titelbildschirm ohne Ladefehler (28.10.) |
+| 1.21-fabric | ja (lokal) | ja (31.10., Rückmeldung) | gilt für 1.21 und 1.21.1 |
+| 1.21-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.1-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.2-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.3-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.3-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.4-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.4-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.5-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.5-neoforge | ja (lokal) | ja (31.10., Rückmeldung) | startet bis zum Titelbildschirm ohne Ladefehler (28.10.) |
+| 1.21.6-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.7-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.8-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.8-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.9-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.10-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.10-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.11-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 1.21.11-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 26.1-fabric | ja (lokal) | ja (31.10., Rückmeldung) | gilt für 26.1 – 26.1.2 |
+| 26.1-neoforge | ja (lokal) | ja (31.10., Rückmeldung) | nur 26.1.2 |
+| 26.2-fabric | ja (lokal) | ja (31.10., Rückmeldung) | auch vor dem Umbau nur gebaut |
+| 26.2-neoforge | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 26.3-fabric | ja (lokal) | ja (31.10., Rückmeldung) |           |
+| 26.3-neoforge | ja (lokal) | ja (31.10., Rückmeldung) | startet bis zum Titelbildschirm ohne Ladefehler (28.10.) |
 
 Vor dem Umbau (Fabric, 0.0.x/0.1.x) wurden laut bisheriger Doku alle Versionen außer 26.2 im Spiel geprüft. Nach dem
 Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
@@ -58,7 +61,8 @@ Umbau gilt jede Kombination wieder als ungetestet, bis sie neu geprüft ist.
 ## Checkliste im Spiel
 
 1. Spiel startet ohne Fehler, Mod erscheint in der Mod-Liste (Fabric: Mod Menu, NeoForge: „Mods“).
-2. `/tracker server <Adresse>`, auf der Website Code erzeugen, `/tracker link <Code>` → grüne Meldung.
+2. Ohne `/tracker server`: auf schematictracker.app Code erzeugen, `/tracker link <Code>` → grüne Meldung.
+   Einstellungen: Feld „Website“ zeigt `https://schematictracker.app`; Feld leeren → wieder diese Adresse.
 3. HUD erscheint unten rechts: Icons, Namen in Spielsprache, fehlende Menge, Prozent im Titel.
 4. Auf der Website eine Menge ändern → nach wenigen Sekunden im HUD.
 5. `J` blendet das HUD aus/ein; im Menü (Esc) und bei F3 ist es weg.

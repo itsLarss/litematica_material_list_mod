@@ -147,6 +147,24 @@ class CoreTest {
 	}
 
 	@Test
+	void usesPublicWebsiteByDefault(@org.junit.jupiter.api.io.TempDir java.nio.file.Path dir) throws Exception {
+		assertEquals("https://schematictracker.app", new TrackerConfig().server);
+		java.nio.file.Path file = dir.resolve("schematic-tracker.json");
+		// Ältere Config ohne bzw. mit leerer Adresse: öffentliche Website
+		java.nio.file.Files.writeString(file, "{\"token\":\"\",\"rows\":4}");
+		assertEquals(TrackerConfig.DEFAULT_SERVER, TrackerConfig.load(file).server);
+		java.nio.file.Files.writeString(file, "{\"server\":\"\"}");
+		assertEquals(TrackerConfig.DEFAULT_SERVER, TrackerConfig.load(file).server);
+		// Eigene Instanz bleibt
+		java.nio.file.Files.writeString(file, "{\"server\":\"http://localhost:3000\",\"token\":\"t\"}");
+		TrackerConfig own = TrackerConfig.load(file);
+		assertEquals("http://localhost:3000", own.server);
+		assertTrue(own.linked());
+		// Noch keine Config-Datei (Erststart): ebenfalls die öffentliche Website
+		assertEquals(TrackerConfig.DEFAULT_SERVER, TrackerConfig.load(dir.resolve("fehlt.json")).server);
+	}
+
+	@Test
 	void convertsUnits() {
 		assertEquals(40.75, Amounts.inUnit(70416, 64, Amounts.Unit.SHULKER), 0.01);
 		assertEquals(2.0, Amounts.inUnit(128, 64, Amounts.Unit.STACKS), 1e-9);

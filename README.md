@@ -52,9 +52,11 @@ Older releases (up to `0.1.3`) used the scheme `0.0.<x>-1.21.<x>` and `0.1.<x>-2
 ## Usage
 
 1. Install the jar matching your Minecraft version and loader into `mods/` (on Fabric also Fabric API).
-2. Set the website once: `/tracker server https://<your website>` (or in the settings).
-3. On the website, open your list → *Share* → *Minecraft mod* → *Create code*.
-4. In game: `/tracker link K7QM-4XPA`. Done – the HUD appears bottom right.
+2. On [schematictracker.app](https://schematictracker.app), open your list → *Share* → *Minecraft mod* → *Create code*.
+3. In game: `/tracker link K7QM-4XPA`. Done – the HUD appears bottom right.
+
+The website `https://schematictracker.app` is preset. Only if you run your own instance, change it with
+`/tracker server https://<your website>` or in the settings (an empty field goes back to the default).
 
 Instead of a code you can also paste a share link: `/tracker link https://<website>/s/<token>`
 (a view-only link shows the list but can't change anything).
