@@ -113,6 +113,8 @@ Needs JDK 25 to run Gradle (the 1.21 jars are still built for Java 21).
                                            #   1.21.4 | 26.3-neoforge, comma separated)
 ```
 
+Releases go to Modrinth through the *Release* GitHub workflow (see `CLAUDE.md`).
+
 The build uses [Stonecutter](https://stonecutter.kikugie.dev/): every combination is a subproject in
 `versions/<minecraft>-<loader>/`, and all of them share the sources in `src/main/`.
 

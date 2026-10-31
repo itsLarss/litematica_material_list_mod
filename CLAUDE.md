@@ -258,7 +258,17 @@ Neue Minecraft-Version hinzufügen:
 - Game Versions pro Jar stehen in `stonecutter.properties.toml` (`mod.mc_releases`) und werden beim Release
   übernommen.
 - `./gradlew publishDryRun` legt alle Release-Dateien mit Metadaten unter `versions/*/build/publishMods/` ab,
-  **ohne** etwas hochzuladen. Echtes Veröffentlichen ist bewusst nicht eingebaut.
+  **ohne** etwas hochzuladen.
+- **Veröffentlichen** nur über den Workflow `.github/workflows/release.yml` (GitHub → Actions → Release →
+  „Run workflow“, Version eingeben, Haken „publish“). Ablauf für ein Update:
+  1. `mod.version` in `stonecutter.properties.toml` hochzählen, oben in `CHANGELOG.md` einen Abschnitt `## <version>`
+     schreiben (Englisch, ohne Emojis) – genau dieser Abschnitt wird der Modrinth-Changelog.
+  2. Committen, per PR nach `main`.
+  3. Workflow erst ohne Haken (Trockenlauf), dann mit Haken starten. Er prüft: Version stimmt mit der Datei, Abschnitt
+     im Changelog vorhanden, Lauf von `main`, Version noch nicht veröffentlicht (Tag `v<version>`). Danach lädt er alle
+     Kombinationen hoch und setzt das Tag.
+- Das Token liegt nur als GitHub-Secret `MODRINTH_TOKEN` (Modrinth-PAT nur mit „Create versions“), **nie im Repo**.
+  Lokal echt hochladen: `./gradlew publishRelease -Ppublish.live=true` mit gesetztem `MODRINTH_TOKEN` – nur im Notfall.
 
 ---
 
