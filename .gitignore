@@ -5,3 +5,6 @@ run-*/
 out/
 *.iml
 .idea/
+CHANGELOG.md
+CLAUDE.md
+TESTING.md
