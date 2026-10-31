@@ -17,18 +17,48 @@ Litematica und funktioniert auf jedem Server.
 ### Funktionen
 
 - **Verbinden:** `/tracker link <Code>` (Code von der Website: Teilen → Minecraft-Mod → Code erzeugen) oder
-  `/tracker link <Freigabe-Link>`. Die Website-Adresse einmal mit `/tracker server <Adresse>` setzen.
+  `/tracker link <Freigabe-Link>`. Die Website `https://schematictracker.app` ist voreingestellt
+  (`TrackerConfig.DEFAULT_SERVER`, leere Adresse in alten Configs = Standard); `/tracker server <Adresse>` nur für eine
+  eigene Instanz.
 - **HUD:** echte Item-Icons, Name in der Spielsprache, fehlende Menge `70417 (40,75 SB)`, Fortschritt in Prozent,
   „… +N weitere“. Ausgeblendet in Menüs (einstellbar) und bei F3. Taste **J** = ein/aus.
 - **Live-Sync:** alle 2,5 s nur die Änderungen (`?since=`), nach 2 Minuten Ruhe alle 10 s, nur solange die Liste
   sichtbar ist und das Spiel nicht pausiert.
 - **Ganze Liste** (Taste **K**): scrollen, Filter Offen/Meine/Alle, Sortierung, Klick = „Ich sammle das“ setzen
   bzw. freigeben, Tooltip mit Menge und wer sammelt.
+- **Mengen eintragen:** Rechtsklick in der ganzen Liste → Feld mit Schnelleingabe wie auf der Website
+  (`core/QuickAmount`, gleiche Fälle wie `tests/features.test.ts` der Website) und Knöpfe +1 St/SB/DK.
+  `/tracker add <item> <menge>` addiert, `/tracker set <item> <menge>` setzt; `<item>` = ID ohne `minecraft:`,
+  Name (in Anführungszeichen, wenn mit Leerzeichen) oder `hand`. Gespeichert wird gesammelt nach 600 ms
+  (`ListSync.setHave`), eigene Eingaben haben Vorrang vor Abrufen, bis der Server sie bestätigt hat.
+- **Fertig-Meldungen:** Toast + Ton, wenn ein Material voll ist, bei „Liste fertig“ zusätzlich Konfetti (eigene
+  Animation über `Gfx`, keine Partikel). Erkennung in `core/Completions` (beim ersten Laden still), Anzeige in
+  `Notifications`. Einzeln abschaltbar (`notifyToast`, `notifySound`, `notifyConfetti`), „Vorschau“ in den
+  Einstellungen. Toast-API je Version in `Compat.toast` (bis 1.21.1 `getToasts()`, ab 26.2 `gui.toastManager()`).
+- **Farm-Session:** `core/FarmSession` zählt eigene Zuwächse (über `ListSync.onOwnAmount`). Tempo pro Material vom
+  ersten bis zum letzten Eintrag (mind. 1 min); startet die Session von selbst, ist der erste Eintrag nur
+  Ausgangspunkt. Restzeit = fehlend / Tempo für das zuletzt erhöhte Material. Start beim ersten Eintrag,
+  Neustart per `/tracker session start`, Taste (ohne Standardbelegung) oder Einstellungen; HUD-Zeile abschaltbar
+  (`hudSession`). Nur im Speicher, nicht in der Config.
+- **Notizen (nur lesen):** `note` und `items[].note` aus API v1 (`TrackerApi.optStr`: fehlendes Feld = null, so
+  bleibt es bei älteren Websites und Nur-Ansehen-Links still aus). HUD kurz (abschaltbar, `hudNotes`), Liste `K`
+  voll im Notizbereich unten (Material unter der Maus, sonst Listen-Notiz). Schreiben geht nur auf der Website.
+- **Wer sammelt was im HUD:** Claims anderer neben der Menge (`hudClaims`), Farbe je Name aus fester Palette
+  (`Texts.claimColor`, `claimColors`). Eigene Claims weiter nur als gelber Name.
+- **Einstellungen auf zwei Seiten** (`TrackerConfigScreen.morePage`): Seite 1 Verbindung + Aussehen, Seite 2
+  Meldungen, Farm-Session, Notizen, Claims. Neue Optionen auf Seite 2; beide Seiten müssen bei GUI-Größe 4
+  (270 px hoch) passen.
+- **Deadline (nur anzeigen):** `deadline` aus API v1 und – falls vorhanden – `deadlineStatus` (`core/Deadline`,
+  `TrackerApi.parseDeadline`). Ohne Status nur das Datum, die Mod rechnet nicht selbst. HUD-Zeile (`hudDeadline`)
+  und Überschrift in `K`, Farbe nach Status.
+- **Voreinstellungen:** `core/Preset` (MINIMAL, CLEAR = Standard, ALL) setzt nur Anzeige- und Meldungs-Optionen,
+  nie Verbindung, Filter, Sortierung, Einheit, Ecke oder Name. Knöpfe oben auf Seite 2 (aktive mit „✔“) und
+  `/tracker config preset <minimal|clear|all>`. Neue Anzeige-Optionen auch in `Preset.apply` und `matches` eintragen.
 - **Einstellungen** (Mod Menu, `/tracker config` oder „Einstellungen…“ in der Liste): Website, Verbinden/Trennen,
   HUD an/aus, Filter, Sortierung, Einheit (Stacks/SB/DK), Ecke, Zeilen, Größe, Hintergrund, in Menüs ausblenden,
-  eigener Name für „Meine“.
+  eigener Name für „Meine“, Fertig-Meldung/-Ton/Konfetti.
 - **Befehle:** `/tracker` (Status), `link`, `unlink`, `server`, `status`, `refresh`, `hud [on|off]`,
-  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`.
+  `filter <open|mine|all>`, `sort <missing|name|list>`, `list`, `config`, `add <item> <menge>`, `set <item> <menge>`, `session [start|stop]`, `config preset <minimal|clear|all>`.
 - **Sprachen:** Englisch und Deutsch (`en_us.json`, `de_de.json`), richtet sich nach der Spielsprache.
 
 ---
@@ -85,6 +115,8 @@ auf Fabric `schematic-tracker`. Sprachdateien, Config-Datei und Texte sind gleic
 ./gradlew :1.21.4-neoforge:build           # eine Kombination → versions/1.21.4-neoforge/build/libs/
 ./gradlew :core:test                       # nur die Unit-Tests
 ./gradlew :26.3-fabric:runClient           # Minecraft mit der Mod starten (Ordner run/26.3-fabric/)
+./gradlew runClients -Pclients=fabric      # mehrere Clients gleichzeitig: all | fabric | neoforge |
+                                           #   Version (1.21.4) | Kombination (26.3-neoforge), kommagetrennt
 ./gradlew publishDryRun                    # Modrinth-Trockenlauf, lädt NICHTS hoch
 ```
 
@@ -98,11 +130,14 @@ Neue Kombination = auch in die Matrix dort eintragen.
 
 1. Website lokal oder live laufen lassen (siehe Website-`CLAUDE.md`).
 2. `./gradlew :<version>-<loader>:runClient`, Welt anlegen.
-3. `/tracker server http://localhost:3000` (bzw. die echte Adresse), auf der Website Code erzeugen,
-   `/tracker link <Code>`.
+3. Gegen die echte Website: nur Code erzeugen und `/tracker link <Code>`. Gegen eine lokale Website vorher
+   `/tracker server http://localhost:3000` (zurück mit `/tracker server https://schematictracker.app`).
 4. Prüfen: HUD erscheint, Änderung auf der Website taucht nach ein paar Sekunden auf, `K` öffnet die Liste,
    Klick setzt „Ich sammle das“ (erscheint im Verlauf der Website). Auf NeoForge zusätzlich: Mod-Liste →
    Schematic Tracker → Einstellungen.
+
+Jeder Test-Client bekommt höchstens 2 GB Speicher (`-PclientMemory=3G` ändert das). Alle 25 gleichzeitig brauchen
+entsprechend viel RAM – lieber gruppenweise starten.
 
 Im Entwicklungs-Client heißt der Spieler jedes Mal anders (`Player123`), deshalb ist „Meine“ dort meist leer.
 
@@ -168,6 +203,11 @@ Loader-Unterschiede: `//? if fabric { … }` bzw. `neoforge`; außerdem landet `
 | 26.1       | unverschleiert, Java 25, `GuiGraphicsExtractor`, `KeyMappingHelper`            | `Gfx`, `CompatScreen`, `fabric/` |
 | 26.2       | aktueller Bildschirm über `Minecraft.gui`                                      | `Compat`                         |
 
+**Tastencodes nie als feste Zahl** (z. B. 74 für J): Ab 26.3 nutzt Minecraft SDL statt GLFW, die Codes sind
+andere (J = 13, Enter = 40, „keine Taste“ = 0 statt -1). Immer `InputConstants.KEY_…` bzw.
+`InputConstants.UNKNOWN.getValue()` verwenden – das wird pro Version richtig einkompiliert. Gleiches gilt für
+Maustasten: `InputConstants.MOUSE_BUTTON_LEFT/RIGHT` (bis 1.21.11: 0/1, ab 26.3: 1/3).
+
 Auf NeoForge ab 1.21.9 die Tasten-Kategorie **nicht** über `KeyMapping.Category.register` anlegen (wirft sonst
 „already registered“), sondern über `RegisterKeyMappingsEvent#registerCategory` (siehe `Compat`).
 
@@ -218,13 +258,28 @@ Neue Minecraft-Version hinzufügen:
 - Game Versions pro Jar stehen in `stonecutter.properties.toml` (`mod.mc_releases`) und werden beim Release
   übernommen.
 - `./gradlew publishDryRun` legt alle Release-Dateien mit Metadaten unter `versions/*/build/publishMods/` ab,
-  **ohne** etwas hochzuladen. Echtes Veröffentlichen ist bewusst nicht eingebaut.
+  **ohne** etwas hochzuladen.
+- **Veröffentlichen** nur über den Workflow `.github/workflows/release.yml` (GitHub → Actions → Release →
+  „Run workflow“, Version eingeben, Haken „publish“). Ablauf für ein Update:
+  1. `mod.version` in `stonecutter.properties.toml` hochzählen, oben in `CHANGELOG.md` einen Abschnitt `## <version>`
+     schreiben (Englisch, ohne Emojis) – genau dieser Abschnitt wird der Modrinth-Changelog.
+  2. Committen, per PR nach `main`.
+  3. Workflow erst ohne Haken (Trockenlauf), dann mit Haken starten. Er prüft: Version stimmt mit der Datei, Abschnitt
+     im Changelog vorhanden, Lauf von `main`, Version noch nicht veröffentlicht (Tag `v<version>`). Danach lädt er alle
+     Kombinationen hoch und setzt das Tag.
+- Das Token liegt nur als GitHub-Secret `MODRINTH_TOKEN` (Modrinth-PAT nur mit „Create versions“), **nie im Repo**.
+  Lokal echt hochladen: `./gradlew publishRelease -Ppublish.live=true` mit gesetztem `MODRINTH_TOKEN` – nur im Notfall.
 
 ---
 
 ## 7. Offene Punkte / Ideen
 
-- **Standard-Website-Adresse** eintragen, sobald die Domain feststeht (dann entfällt `/tracker server`).
-- **Mengen in der Mod eintragen:** Zahlenfeld mit Schnelleingabe und Knöpfen (+1 Stack/SB/DK), „Aus Inventar zählen“,
-  `/tracker add <item> <menge>` / `/tracker set …`. Die Website-API kann das schon (`PATCH /api/v1/list/items`).
+- **Website-Änderung für die Deadline-Anzeige** (abwärtskompatibel, nur ein neues Feld in API v1):
+  `GET /api/v1/list` bekommt `deadlineStatus`, berechnet auf dem Server mit dem vorhandenen `deadlineInfo` und
+  `paceBase` (`src/lib/deadline.ts`), `null` wenn keine Deadline:
+  `{ "status": "onTrack|tight|behind|done|overdue|unknown", "daysLeft": 57, "forecast": "2026-12-28" | null }`.
+  Die Mod liest das Feld schon (`TrackerApi.parseDeadline`); alte Mods ignorieren es.
+- **Website: Notizen und Deadline live bringen** (`dev-main` → `main`), sonst sieht die Mod sie nicht.
+
+- **„Aus Inventar zählen“** (Menge aus dem eigenen Inventar übernehmen) – noch nicht gebaut.
 - 26.2 im Spiel testen (bisher nur gebaut).

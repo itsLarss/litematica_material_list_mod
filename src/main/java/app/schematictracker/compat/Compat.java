@@ -4,6 +4,7 @@ import java.util.function.Function;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -13,7 +14,7 @@ import net.minecraft.world.item.Items;
 
 /**
  * Kleine Unterschiede zwischen den Minecraft-Versionen. Gemeinsamer Code ruft nur diese Methoden auf.
- * Bis 1.21.10 heißt Identifier noch ResourceLocation (ersetzt Stonecutter automatisch).
+ * Bis 1.21.10 heißt Identifier noch Identifier (ersetzt Stonecutter automatisch).
  */
 public final class Compat {
 	public static final String NAMESPACE = "schematic-tracker";
@@ -27,7 +28,21 @@ public final class Compat {
 	*///?}
 	//?}
 
+	/** Eigene Kennung, damit Meldungen der Mod nicht mit Minecraft-Meldungen zusammengelegt werden */
+	private static final SystemToast.SystemToastId TOAST = new SystemToast.SystemToastId();
+
 	private Compat() {}
+
+	/** Kleine Meldung oben rechts (Toast) */
+	public static void toast(Minecraft mc, Component title, Component message) {
+		//? if >=26.2 {
+		SystemToast.add(mc.gui.toastManager(), TOAST, title, message);
+		//?} elif >=1.21.2 {
+		/*SystemToast.add(mc.getToastManager(), TOAST, title, message);
+		*///?} else {
+		/*SystemToast.add(mc.getToasts(), TOAST, title, message);
+		*///?}
+	}
 
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(NAMESPACE, path);
@@ -39,7 +54,12 @@ public final class Compat {
 		return key == null ? Items.AIR : BuiltInRegistries.ITEM.getOptional(key).orElse(Items.AIR);
 	}
 
-	/** Tastenbelegung in der Kategorie "Schematic Tracker"; key ist ein GLFW-Tastencode. */
+	/** Minecraft-ID eines Items, z. B. "minecraft:stone". */
+	public static String itemId(Item item) {
+		return BuiltInRegistries.ITEM.getKey(item).toString();
+	}
+
+	/** Tastenbelegung in der Kategorie "Schematic Tracker"; key immer als InputConstants.KEY_… (ab 26.3 SDL-Codes). */
 	public static KeyMapping key(String name, int key) {
 		//? if >=1.21.9 {
 		return new KeyMapping(name, key, CATEGORY);

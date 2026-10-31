@@ -1,5 +1,6 @@
 package app.schematictracker.screen;
 
+import app.schematictracker.Notifications;
 import app.schematictracker.SchematicTrackerClient;
 import app.schematictracker.TrackerCommands;
 import app.schematictracker.compat.Compat;
@@ -8,6 +9,7 @@ import app.schematictracker.compat.Gfx;
 import app.schematictracker.core.Amounts;
 import app.schematictracker.core.ListSync;
 import app.schematictracker.core.ListView;
+import app.schematictracker.core.Preset;
 import app.schematictracker.core.TrackerConfig;
 import app.schematictracker.core.TrackerLink;
 import java.util.Locale;
@@ -25,6 +27,8 @@ public final class TrackerConfigScreen extends CompatScreen {
 	private EditBox code;
 	private EditBox playerName;
 	private Component message = Component.empty();
+	/** Seite 2: Meldungen, Farm-Session, Notizen, Claims (damit alles auch bei großer GUI-Skalierung passt) */
+	private boolean morePage;
 
 	public TrackerConfigScreen(Screen parent) {
 		super(Component.translatable("schematic-tracker.config.title"));
@@ -47,6 +51,10 @@ public final class TrackerConfigScreen extends CompatScreen {
 		int left = width / 2 - w - gap / 2;
 		int right = width / 2 + gap / 2;
 		int y = 32;
+		if (morePage) {
+			initMorePage(c, w, left, right, y);
+			return;
+		}
 
 		// Verbindung
 		server = new EditBox(font, left, y, w * 2 + gap, 20, Component.translatable("schematic-tracker.config.server"));
@@ -104,8 +112,76 @@ public final class TrackerConfigScreen extends CompatScreen {
 		addRenderableWidget(playerName);
 		y += 26;
 
-		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose())
-				.bounds(width / 2 - 100, Math.max(y, Math.min(height - 28, y + 8)), 200, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.more"), b -> switchPage(true))
+				.bounds(left, y, w, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(right, y, w, 20).build());
+	}
+
+	private void initMorePage(TrackerConfig c, int w, int left, int right, int y) {
+		// Voreinstellungen: setzen Aussehen und Meldungen, einzeln bleibt alles änderbar
+		int pw = (w * 2 + 8 - 2 * 4) / 3;
+		Preset[] presets = Preset.values();
+		for (int i = 0; i < presets.length; i++) {
+			Preset preset = presets[i];
+			Component label = Component.translatable("schematic-tracker.preset." + preset.id());
+			if (preset.matches(c)) label = Component.literal("✔ ").append(label);
+			addRenderableWidget(Button.builder(label, b -> {
+				preset.apply(c);
+				SchematicTrackerClient.saveConfig();
+				message = Component.translatable("schematic-tracker.preset.applied",
+						Component.translatable("schematic-tracker.preset." + preset.id()));
+				rebuildWidgets();
+			}).bounds(left + i * (pw + 4), y, pw, 20).build());
+		}
+		y += 26;
+
+		// Fertig-Meldungen
+		addRenderableWidget(CycleButton.onOffBuilder(c.notifyToast)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.notify_toast"), (b, v) -> c.notifyToast = v));
+		addRenderableWidget(CycleButton.onOffBuilder(c.notifySound)
+				.create(right, y, w, 20, Component.translatable("schematic-tracker.config.notify_sound"), (b, v) -> c.notifySound = v));
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.notifyConfetti)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.notify_confetti"),
+						(b, v) -> c.notifyConfetti = v));
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.notify_preview"),
+				b -> Notifications.preview(minecraft)).bounds(right, y, w, 20).build());
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudSession)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.hud_session"), (b, v) -> c.hudSession = v));
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.restart_session"),
+				b -> SchematicTrackerClient.restartSession(minecraft)).bounds(right, y, w, 20).build());
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudNotes)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.hud_notes"), (b, v) -> c.hudNotes = v));
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudClaims)
+				.create(right, y, w, 20, Component.translatable("schematic-tracker.config.hud_claims"), (b, v) -> c.hudClaims = v));
+		y += 22;
+		addRenderableWidget(CycleButton.onOffBuilder(c.claimColors)
+				.create(left, y, w, 20, Component.translatable("schematic-tracker.config.claim_colors"), (b, v) -> c.claimColors = v));
+		addRenderableWidget(CycleButton.onOffBuilder(c.hudDeadline)
+				.create(right, y, w, 20, Component.translatable("schematic-tracker.config.hud_deadline"), (b, v) -> c.hudDeadline = v));
+		y += 26;
+
+		addRenderableWidget(Button.builder(Component.translatable("schematic-tracker.config.back"), b -> switchPage(false))
+				.bounds(left, y, w, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(right, y, w, 20).build());
+	}
+
+	/** Seite wechseln; Eingaben der ersten Seite vorher übernehmen */
+	private void switchPage(boolean more) {
+		keepTextFields();
+		morePage = more;
+		message = Component.empty();
+		rebuildWidgets();
+	}
+
+	private void keepTextFields() {
+		if (server != null) applyServer();
+		if (playerName != null) config().playerName = playerName.getValue().trim();
+		server = null;
+		code = null;
+		playerName = null;
 	}
 
 	private void link() {
@@ -138,7 +214,7 @@ public final class TrackerConfigScreen extends CompatScreen {
 	/** Server aus dem Feld übernehmen; ein anderer Server trennt die alte Verbindung. */
 	private void applyServer() {
 		String value = server.getValue().trim();
-		String normalized = value.isEmpty() ? "" : TrackerLink.normalizeServer(value);
+		String normalized = value.isEmpty() ? TrackerConfig.DEFAULT_SERVER : TrackerLink.normalizeServer(value);
 		if (normalized == null) return;
 		if (!normalized.equals(config().server)) {
 			config().unlink();
@@ -149,6 +225,7 @@ public final class TrackerConfigScreen extends CompatScreen {
 
 	@Override
 	protected void draw(Gfx g, int mouseX, int mouseY, float delta) {
+		Notifications.renderConfetti(g);
 		g.centered(font, title, width / 2, 8, 0xFFFFFFFF);
 		TrackerConfig c = config();
 		Component state;
@@ -161,13 +238,12 @@ public final class TrackerConfigScreen extends CompatScreen {
 					Component.translatable("schematic-tracker.status." + sync.status().name().toLowerCase(Locale.ROOT)));
 		}
 		g.centered(font, state, width / 2, 20, 0xFFFFFFFF);
-		g.centered(font, message, width / 2, 32 + 24 + 23, 0xFFFFFFFF);
+		g.centered(font, message, width / 2, morePage ? height - 12 : 32 + 24 + 23, 0xFFFFFFFF);
 	}
 
 	@Override
 	public void onClose() {
-		applyServer();
-		config().playerName = playerName.getValue().trim();
+		keepTextFields();
 		SchematicTrackerClient.saveConfig();
 		Compat.setScreen(minecraft, parent);
 	}

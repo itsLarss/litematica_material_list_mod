@@ -17,8 +17,11 @@ public final class TrackerConfig {
 		TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
 	}
 
-	/** Website, z. B. https://schematic-tracker.example */
-	public String server = "";
+	/** Öffentliche Website; vorausgefüllt, damit niemand sie eintragen muss */
+	public static final String DEFAULT_SERVER = "https://schematictracker.app";
+
+	/** Website; nur für eine eigene Instanz ändern (/tracker server) */
+	public String server = DEFAULT_SERVER;
 	/** Mitbearbeiten- oder Ansehen-Token der verbundenen Liste */
 	public String token = "";
 	public String listName = "";
@@ -40,6 +43,23 @@ public final class TrackerConfig {
 	/** HUD ausblenden, solange Chat oder ein anderes Menü offen ist */
 	public boolean hideInMenus = true;
 
+	/** Meldung oben rechts, wenn ein Material oder die Liste fertig wird */
+	public boolean notifyToast = true;
+	/** Ton dazu */
+	public boolean notifySound = true;
+	/** Konfetti, wenn die ganze Liste fertig ist */
+	public boolean notifyConfetti = true;
+	/** Zeile "Items pro Stunde / Restzeit" der Farm-Session im HUD */
+	public boolean hudSession = true;
+	/** Notizen (kurz) im HUD */
+	public boolean hudNotes = true;
+	/** Wer sammelt was (Claims anderer) im HUD */
+	public boolean hudClaims = true;
+	/** Namen farbig statt grau */
+	public boolean claimColors = true;
+	/** Deadline der Liste im HUD */
+	public boolean hudDeadline = true;
+
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public boolean linked() {
@@ -53,7 +73,8 @@ public final class TrackerConfig {
 
 	/** Werte in sinnvolle Grenzen bringen (Datei kann von Hand bearbeitet worden sein). */
 	public TrackerConfig sanitize() {
-		if (server == null) server = "";
+		// Leer (ältere Configs vor der festen Domain) = öffentliche Website
+		if (server == null || server.isBlank()) server = DEFAULT_SERVER;
 		if (token == null) token = "";
 		if (listName == null) listName = "";
 		if (playerName == null) playerName = "";

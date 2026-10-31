@@ -14,6 +14,10 @@ public final class TrackedList {
 	private String name;
 	private String role;
 	private long version;
+	private String note;
+	private Deadline deadline;
+	/** Zählt jede Änderung (Abruf oder eigene Eingabe), damit die Mod nur bei Änderungen neu auswertet */
+	private long revision;
 	private final Map<String, TrackedItem> items = new LinkedHashMap<>();
 
 	public TrackedList(String id, String name, String role, long version, List<TrackedItem> items) {
@@ -26,6 +30,7 @@ public final class TrackedList {
 
 	/** Übernimmt eine Antwort von GET /api/v1/list; gibt zurück, ob sich etwas geändert hat. */
 	public boolean apply(String name, String role, long version, boolean partial, List<TrackedItem> changed) {
+		revision++;
 		boolean changedAnything = version != this.version || !name.equals(this.name);
 		this.name = name;
 		this.role = role;
@@ -39,7 +44,7 @@ public final class TrackedList {
 			// Position bleibt erhalten: Teilantworten kommen in Listenreihenfolge, aber unvollständig.
 			int position = old != null ? old.position() : item.position();
 			items.put(item.id(), new TrackedItem(item.id(), item.name(), item.itemId(), item.total(), item.have(),
-					item.stackSize(), item.farmed(), item.claimedBy(), position));
+					item.stackSize(), item.farmed(), item.claimedBy(), position, item.note()));
 			changedAnything = true;
 		}
 		return changedAnything;
@@ -47,7 +52,39 @@ public final class TrackedList {
 
 	/** Ändert ein Material lokal (z. B. nach einem eigenen Klick), bevor der Server antwortet. */
 	public void replace(TrackedItem item) {
-		if (items.containsKey(item.id())) items.put(item.id(), item);
+		if (items.containsKey(item.id())) {
+			items.put(item.id(), item);
+			revision++;
+		}
+	}
+
+	/** Notiz zur ganzen Liste; null = keine, nicht freigegeben (Nur-Ansehen) oder Website ohne Notizen */
+	public String note() {
+		return note;
+	}
+
+	public boolean setNote(String note) {
+		String clean = note == null || note.isBlank() ? null : note;
+		if (java.util.Objects.equals(clean, this.note)) return false;
+		this.note = clean;
+		revision++;
+		return true;
+	}
+
+	/** Deadline der Liste; null = keine gesetzt oder Website ohne Deadline */
+	public Deadline deadline() {
+		return deadline;
+	}
+
+	public boolean setDeadline(Deadline deadline) {
+		if (java.util.Objects.equals(deadline, this.deadline)) return false;
+		this.deadline = deadline;
+		revision++;
+		return true;
+	}
+
+	public long revision() {
+		return revision;
 	}
 
 	public String id() {

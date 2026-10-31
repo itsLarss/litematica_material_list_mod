@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 /*import net.minecraft.client.gui.GuiGraphics;
 *///?}
 //? if >=1.21.9 {
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 //?}
 
@@ -20,8 +21,13 @@ public abstract class CompatScreen extends Screen {
 	/** Eigene Inhalte über den Knöpfen zeichnen. */
 	protected abstract void draw(Gfx g, int mouseX, int mouseY, float delta);
 
-	/** Linksklick, den kein Knopf genommen hat. */
-	protected boolean clicked(double mouseX, double mouseY) {
+	/** Klick, den kein Knopf genommen hat; button mit InputConstants.MOUSE_BUTTON_… vergleichen (ab 26.3 andere Zahlen). */
+	protected boolean clicked(double mouseX, double mouseY, int button) {
+		return false;
+	}
+
+	/** Taste gedrückt (Code wie InputConstants.KEY_…, ab 26.3 SDL statt GLFW), bevor der Bildschirm sie verarbeitet; true = verbraucht. */
+	protected boolean key(int keyCode) {
 		return false;
 	}
 
@@ -43,13 +49,23 @@ public abstract class CompatScreen extends Screen {
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (super.mouseClicked(event, doubleClick)) return true;
-		return event.button() == 0 && clicked(event.x(), event.y());
+		return clicked(event.x(), event.y(), event.button());
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent event) {
+		return key(event.key()) || super.keyPressed(event);
 	}
 	//?} else {
 	/*@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (super.mouseClicked(mouseX, mouseY, button)) return true;
-		return button == 0 && clicked(mouseX, mouseY);
+		return clicked(mouseX, mouseY, button);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return key(keyCode) || super.keyPressed(keyCode, scanCode, modifiers);
 	}
 	*///?}
 }
