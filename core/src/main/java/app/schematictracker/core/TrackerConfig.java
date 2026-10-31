@@ -17,8 +17,11 @@ public final class TrackerConfig {
 		TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
 	}
 
-	/** Website, z. B. https://schematic-tracker.example */
-	public String server = "";
+	/** Öffentliche Website; vorausgefüllt, damit niemand sie eintragen muss */
+	public static final String DEFAULT_SERVER = "https://schematictracker.app";
+
+	/** Website; nur für eine eigene Instanz ändern (/tracker server) */
+	public String server = DEFAULT_SERVER;
 	/** Mitbearbeiten- oder Ansehen-Token der verbundenen Liste */
 	public String token = "";
 	public String listName = "";
@@ -70,7 +73,8 @@ public final class TrackerConfig {
 
 	/** Werte in sinnvolle Grenzen bringen (Datei kann von Hand bearbeitet worden sein). */
 	public TrackerConfig sanitize() {
-		if (server == null) server = "";
+		// Leer (ältere Configs vor der festen Domain) = öffentliche Website
+		if (server == null || server.isBlank()) server = DEFAULT_SERVER;
 		if (token == null) token = "";
 		if (listName == null) listName = "";
 		if (playerName == null) playerName = "";

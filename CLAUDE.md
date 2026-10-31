@@ -17,7 +17,9 @@ Litematica und funktioniert auf jedem Server.
 ### Funktionen
 
 - **Verbinden:** `/tracker link <Code>` (Code von der Website: Teilen → Minecraft-Mod → Code erzeugen) oder
-  `/tracker link <Freigabe-Link>`. Die Website-Adresse einmal mit `/tracker server <Adresse>` setzen.
+  `/tracker link <Freigabe-Link>`. Die Website `https://schematictracker.app` ist voreingestellt
+  (`TrackerConfig.DEFAULT_SERVER`, leere Adresse in alten Configs = Standard); `/tracker server <Adresse>` nur für eine
+  eigene Instanz.
 - **HUD:** echte Item-Icons, Name in der Spielsprache, fehlende Menge `70417 (40,75 SB)`, Fortschritt in Prozent,
   „… +N weitere“. Ausgeblendet in Menüs (einstellbar) und bei F3. Taste **J** = ein/aus.
 - **Live-Sync:** alle 2,5 s nur die Änderungen (`?since=`), nach 2 Minuten Ruhe alle 10 s, nur solange die Liste
@@ -128,8 +130,8 @@ Neue Kombination = auch in die Matrix dort eintragen.
 
 1. Website lokal oder live laufen lassen (siehe Website-`CLAUDE.md`).
 2. `./gradlew :<version>-<loader>:runClient`, Welt anlegen.
-3. `/tracker server http://localhost:3000` (bzw. die echte Adresse), auf der Website Code erzeugen,
-   `/tracker link <Code>`.
+3. Gegen die echte Website: nur Code erzeugen und `/tracker link <Code>`. Gegen eine lokale Website vorher
+   `/tracker server http://localhost:3000` (zurück mit `/tracker server https://schematictracker.app`).
 4. Prüfen: HUD erscheint, Änderung auf der Website taucht nach ein paar Sekunden auf, `K` öffnet die Liste,
    Klick setzt „Ich sammle das“ (erscheint im Verlauf der Website). Auf NeoForge zusätzlich: Mod-Liste →
    Schematic Tracker → Einstellungen.
@@ -269,6 +271,5 @@ Neue Minecraft-Version hinzufügen:
   Die Mod liest das Feld schon (`TrackerApi.parseDeadline`); alte Mods ignorieren es.
 - **Website: Notizen und Deadline live bringen** (`dev-main` → `main`), sonst sieht die Mod sie nicht.
 
-- **Standard-Website-Adresse** eintragen, sobald die Domain feststeht (dann entfällt `/tracker server`).
 - **„Aus Inventar zählen“** (Menge aus dem eigenen Inventar übernehmen) – noch nicht gebaut.
 - 26.2 im Spiel testen (bisher nur gebaut).

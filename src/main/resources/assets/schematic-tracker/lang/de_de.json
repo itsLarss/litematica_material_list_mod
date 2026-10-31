@@ -57,7 +57,7 @@
 
   "schematic-tracker.config.title": "Schematic Tracker",
   "schematic-tracker.config.server": "Website",
-  "schematic-tracker.config.server_hint": "Adresse der Website, z. B. tracker.example.com",
+  "schematic-tracker.config.server_hint": "Website (Standard: schematictracker.app)",
   "schematic-tracker.config.code": "Code oder Freigabe-Link",
   "schematic-tracker.config.code_hint": "Code oder Freigabe-Link",
   "schematic-tracker.config.link": "Verbinden",
