@@ -1,0 +1,74 @@
+name: Release
+
+# Startet nur von Hand: GitHub → Actions → Release → "Run workflow".
+# Ohne Haken bei "publish" ist es ein Trockenlauf (lädt nichts hoch, zeigt was hochgeladen würde).
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Mod-Version, z. B. 0.2.1 – muss mit mod.version in stonecutter.properties.toml übereinstimmen"
+        required: true
+        type: string
+      publish:
+        description: "Wirklich auf Modrinth veröffentlichen (ohne Haken: Trockenlauf)"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # für das Git-Tag v<version> nach dem Veröffentlichen
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # Ein Lauf auf einmal, damit nie zwei Releases gleichzeitig hochladen
+    concurrency: release
+    env:
+      VERSION: ${{ inputs.version }}
+      PUBLISH: ${{ inputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Eingaben prüfen
+        run: |
+          if [ "$PUBLISH" = "true" ] && [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Veröffentlichen nur von main aus (gewählt: $GITHUB_REF_NAME)."; exit 1
+          fi
+          current=$(grep -E '^mod\.version' stonecutter.properties.toml | cut -d'"' -f2)
+          if [ "$current" != "$VERSION" ]; then
+            echo "::error::Eingegeben: $VERSION, in stonecutter.properties.toml steht: $current. Erst dort hochzählen."; exit 1
+          fi
+          if ! grep -qxF "## $VERSION" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md hat keinen Abschnitt '## $VERSION'."; exit 1
+          fi
+          if [ "$PUBLISH" = "true" ] && git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null; then
+            echo "::error::Version $VERSION wurde schon veröffentlicht (Tag v$VERSION existiert)."; exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Trockenlauf
+        if: ${{ !inputs.publish }}
+        run: ./gradlew :core:test publishDryRun
+
+      - name: Auf Modrinth veröffentlichen
+        if: ${{ inputs.publish }}
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: ./gradlew publishRelease -Ppublish.live=true
+
+      - name: Git-Tag setzen
+        if: ${{ inputs.publish }}
+        run: |
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: schematic-tracker-${{ inputs.version }}
+          path: versions/*/build/libs/*.jar
+          if-no-files-found: error

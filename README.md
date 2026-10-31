@@ -9,8 +9,26 @@ in the style of the Litematica material list, and keeps it in sync with the webs
 - **Live:** changes from the website or from friends appear within a few seconds.
 - **Full list** (default key `K`): scroll through everything, click a material to claim it ("I'll collect this")
   or release it. The website shows it right away.
-- **Settings** via Mod Menu, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
-  unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name.
+- **Enter amounts in game:** right-click a material in the full list, then type an amount (same quick input as on
+  the website: `3sb 5st`, `2dc`, `+64`, `-1st`) or use the *+1 st / SB / DC* buttons. Or by command:
+  `/tracker add <item> <amount>` adds, `/tracker set <item> <amount>` corrects. `hand` stands for the item in
+  your hand. Changes are saved after a short pause and show up on the website like any other edit.
+- **Done notifications:** a toast and a sound when a material is complete (yours or a friend's), and confetti when
+  the whole list is done. Each can be turned off in the settings; *Preview* shows how it looks.
+- **Farm session:** counts what you enter in the mod and shows items per hour and the estimated time left for the
+  material you're farming right now (an extra line in the HUD). Starts with your first entry; restart it with
+  `/tracker session start`, a key (unbound by default, see Controls) or the settings.
+- **Notes:** notes from the website (on the list and on materials, e.g. coordinates) show up short in the HUD and in
+  full in the list (`K`, hover a material). Read only; only with a co-edit connection, never via view-only links.
+- **Who collects what:** other players' claims appear next to the amount in the HUD, each name in its own color
+  (can be turned off or shown in gray).
+- **Deadline:** the list's target date from the website in the HUD and the full list, with "on track / tight /
+  behind" once the website provides it. The mod only displays what the website calculates.
+- **Presets:** *Minimal*, *Clear* (default) and *Everything* on the second settings page or with
+  `/tracker config preset <minimal|clear|all>`. Single options stay changeable afterwards.
+- **Settings** (two pages) via Mod Menu, the NeoForge mod list, the full list (*Settings…*) or `/tracker config`: filter (open / mine / all), sort,
+  unit (stacks / shulker boxes / double chests), position, rows, size, background, hide in menus, your name,
+  done message, sound and confetti.
 - English and German, following the game language.
 - Client only; works on any server. Doesn't need Litematica.
 
@@ -34,9 +52,11 @@ Older releases (up to `0.1.3`) used the scheme `0.0.<x>-1.21.<x>` and `0.1.<x>-2
 ## Usage
 
 1. Install the jar matching your Minecraft version and loader into `mods/` (on Fabric also Fabric API).
-2. Set the website once: `/tracker server https://<your website>` (or in the settings).
-3. On the website, open your list → *Share* → *Minecraft mod* → *Create code*.
-4. In game: `/tracker link K7QM-4XPA`. Done – the HUD appears bottom right.
+2. On [schematictracker.app](https://schematictracker.app), open your list → *Share* → *Minecraft mod* → *Create code*.
+3. In game: `/tracker link K7QM-4XPA`. Done – the HUD appears bottom right.
+
+The website `https://schematictracker.app` is preset. Only if you run your own instance, change it with
+`/tracker server https://<your website>` or in the settings (an empty field goes back to the default).
 
 Instead of a code you can also paste a share link: `/tracker link https://<website>/s/<token>`
 (a view-only link shows the list but can't change anything).
@@ -53,8 +73,12 @@ Instead of a code you can also paste a share link: `/tracker link https://<websi
 | `/tracker hud [on\|off]`             | Show/hide the HUD (default key `J`)       |
 | `/tracker filter <open\|mine\|all>`  | What the HUD shows                        |
 | `/tracker sort <missing\|name\|list>`| Order                                     |
+| `/tracker add <item> <amount>`       | Add to the amount (`/tracker add stone 3sb`, `/tracker add hand 64`) |
+| `/tracker set <item> <amount>`       | Correct the amount (`/tracker set glass 2dc 5st`) |
+| `/tracker session [start\|stop]`     | Farm session: rate and time left, restart or stop |
 | `/tracker list`                      | Full list (default key `K`)               |
 | `/tracker config`                    | Settings                                  |
+| `/tracker config preset <minimal\|clear\|all>` | Apply a preset                 |
 
 "Mine" compares the list's "collecting" name with your name from the settings (default: your Minecraft name),
 so use the same name on the website.
@@ -85,7 +109,11 @@ Needs JDK 25 to run Gradle (the 1.21 jars are still built for Java 21).
 ./gradlew :1.21.4-neoforge:build           # one combination → versions/1.21.4-neoforge/build/libs/
 ./gradlew :core:test                       # unit tests only
 ./gradlew :26.3-fabric:runClient           # test client (folder run/26.3-fabric/)
+./gradlew runClients -Pclients=fabric      # several test clients at once (all | fabric | neoforge |
+                                           #   1.21.4 | 26.3-neoforge, comma separated)
 ```
+
+Releases go to Modrinth through the *Release* GitHub workflow (see `CLAUDE.md`).
 
 The build uses [Stonecutter](https://stonecutter.kikugie.dev/): every combination is a subproject in
 `versions/<minecraft>-<loader>/`, and all of them share the sources in `src/main/`.
