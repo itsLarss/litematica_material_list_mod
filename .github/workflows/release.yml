@@ -27,7 +27,7 @@ jobs:
       VERSION: ${{ inputs.version }}
       PUBLISH: ${{ inputs.publish }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Eingaben prüfen
         run: |
@@ -45,15 +45,20 @@ jobs:
             echo "::error::Version $VERSION wurde schon veröffentlicht (Tag v$VERSION existiert)."; exit 1
           fi
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 25
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
+
+      # Erst alles bauen und testen (mit zweitem Versuch ohne gemerkte Download-Fehler), dann erst hochladen –
+      # so kann ein Download-Aussetzer nie mitten im Upload abbrechen, und der Upload selbst wird nie wiederholt.
+      - name: Bauen und testen
+        run: ./gradlew buildAll || ./gradlew buildAll --refresh-dependencies
 
       - name: Trockenlauf
         if: ${{ !inputs.publish }}
-        run: ./gradlew :core:test publishDryRun
+        run: ./gradlew publishDryRun
 
       - name: Auf Modrinth veröffentlichen
         if: ${{ inputs.publish }}
@@ -67,7 +72,7 @@ jobs:
           git tag "v$VERSION"
           git push origin "v$VERSION"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: schematic-tracker-${{ inputs.version }}
           path: versions/*/build/libs/*.jar
